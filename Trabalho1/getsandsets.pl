@@ -85,9 +85,9 @@ incScore(Info, NewInfo):-
 	getScore(Info, Old),
 	New is Old+1,
 	setScore(Info, New, NewInfo).
-	
 
-%WHITE_INTERFACE	
+
+%WHITE_INTERFACE
 decWhiteRegPieces(Game, GameRes):-
 	getWhiteInfo(Game,Info),
 	decRegPieces(Info, NewInfo),

@@ -15,17 +15,39 @@ ite(_,_,Else):- Else.
 clearScreen:-
 	write('\33\[2J').
 	
-readInput(X,Y,Type):- 
+readInput(X,Y,Type,Game):- 
 	repeat,
 		write('Coords (X-Y): '), 
-		read(X-Y), 
-		write('Type: '), 
-		read(Type).
+		read(X-Y),
+		validCoords(X,Y),
+		write('Type: '),
+		read(Type),
+		validType(Type,Game).
 
-readPlay:-
+validCoords(X, Y):-
+	integer(X),
+	integer(Y),
+	X > 0, X < 6,
+	Y > 0, Y < 6.
+
+validCoords(_,_):-
+	write('Invalid input'), nl, fail.
+
+validType(Type,Game):-
+	getCurrentPlayer(Game, Player),
+	ite((Player == blackPlayer, (Type == 'w' ; Type == 'W')), fail, true),
+	ite((Player == whitePlayer, (Type == 'b' ; Type == 'B')), fail, true).
+
+validType(_,_):-
+	write('Invalid input'), nl, fail. 
+
+
+readPlay(Game):-
+	getBoard(Game, Board),
 	repeat,
-		readInput(X,Y,Type).
-		%validInput(X,Y,Type,Board).
+		clearScreen,
+		printBoard(Board),
+		readInput(X,Y,Type,Game).
 
 % Print board
 p_u:- write(' ___ ___ ___ ___ ___ '), nl.
