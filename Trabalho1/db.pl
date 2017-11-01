@@ -1,14 +1,72 @@
 :-use_module(library(lists)).
 
-gamestate([[1,1,0,1,0],[1,1,2,0,0],[2,1,0,0,0],[0,0,0,0,0],[0,0,0,0,0]]).
+board([[1,1,0,1,0],[1,1,2,0,0],[2,1,0,0,0],[0,0,0,0,0],[0,0,0,0,0]]).
+initialBoard([[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]]).
 board_size(5).
+
+initGamePvP(Game):-
+	initialBoard(Board),
+	WhiteInfo = [10,3,0],
+	BlackInfo = [10,2,0],
+	Player = whitePlayer,
+	Mode = pvp,
+	Game = [Board, WhiteInfo, BlackInfo, Player, Mode].
+
+nextPlayer(Current, Next):-
+	ite(Current == whitePlayer, Next = blackPlayer, Next = whitePlayer).
+
+
+%IF THEN ELSE UTILS
+ite(If,Then,_):- If, !, Then.
+ite(_,_,Else):- Else.
+
+getCurrentPlayer(Game,CurPlayer):-
+	selectAtIndex(Game, 4, CurPlayer).
+
+setCurrentPlayer(Game, CurPlayer, GameRes):-
+	replaceAtIndex(Game, 4, CurPlayer, GameRes).
+
+getWhiteInfo(Game, WhiteInfo):-
+	selectAtIndex(Game, 2, WhiteInfo).
+
+setWhiteInfo(Game, WhiteInfo, GameRes):-
+	replaceAtIndex(Game, 2, WhiteInfo, GameRes).
+
+getBlackInfo(Game, BlackInfo):-
+	selectAtIndex(Game, 3, BlackInfo).
+
+setBlackInfo(Game, BlackInfo, GameRes):-
+	replaceAtIndex(Game, 3, BlackInfo, GameRes).
+
+getRegPieces(Info, RegPieces):-
+	selectAtIndex(Info, 1, RegPieces).
+
+getHengePieces(Info, HengePieces):-
+	selectAtIndex(Info, 2, HengePieces).
+
+setRegPieces(Info, NewPieces, NewInfo):-
+	replaceAtIndex(Info, 1, NewPieces, NewInfo).
+
+setHengePieces(Info, NewPieces, NewInfo):-
+	replaceAtIndex(Info, 2, NewPieces, NewInfo).
+
+decRegPieces(Info, NewInfo):-
+	getRegPieces(Info, Old),
+	New is Old-1,
+	setRegPieces(Info, New, NewInfo).
+
+decHengePieces(Info, NewInfo):-
+	getHengePieces(Info, Old),
+	New is Old-1,
+	setHengePieces(Info, New, NewInfo).
 
 
 %--------------------PRINT--------------------------
-convert(Dado, Simbolo):- Dado = 0, Simbolo = ' '.
-convert(Dado, Simbolo):- Dado = 1, Simbolo = 'B'.
-convert(Dado, Simbolo):- Dado = 2, Simbolo = 'W'.
-convert(Dado, Simbolo):- Dado = 3, Simbolo = 'H'.
+%UTIL
+convert(0,' ').
+convert(1,'B').
+convert(2,'W').
+convert(3,'H').
 
 p_u:- write(' ___ ___ ___ ___ ___ '), nl.
 p_s:- write('|___|___|___|___|___|'), nl.
@@ -17,40 +75,43 @@ p_m([L|T]):- p_l(L), p_m(T).
 p_l([C|[]]):- convert(C,S),write('| '), write(S), write(' |'), nl, p_s.
 p_l([C|T]):- convert(C,S),write('| '), write(S), write(' '), p_l(T).
 print_state(State):- p_u, p_m(State).
- 
+%/UTIL
  
  
 %-----------------------OPERATIONS-----------------------------
+%UTIL
+invert_Y(Y,YInv):- YInv is 6 - Y.
 
-
-invert_X(X,XInv):- XInv is 6 - X.
+%SELECT AT INDEX
+selectAtIndex(List, Index, Elem):-
+	nth1(Index, List, Elem).
 
 %SELECT_POS
 select_pos(State,X,Y,Elem):- 
-	
 	nth1(Y,State,Row), 
 	nth1(X,Row,Elem).
 
+%REPLACE AT INDEX
+replaceAtIndex(Src, Index, NewVal, Res) :-
+   replaceAtIndex0(Src, 1, Index, NewVal, Res).
 
-%REPLACE_POS
-list_nth1_item_replaced_NEW(Src, Index, NewVal, Res) :-
-   list_index0_index_item_replaced(Src, 1, Index, NewVal, Res).
-
-list_index0_index_item_replaced([_|Es], I , I, X, [X|Es]).
-list_index0_index_item_replaced([E|Es], I0, I, X, [E|Xs]) :-
+replaceAtIndex0([_|Es], I , I, X, [X|Es]).
+replaceAtIndex0([E|Es], I0, I, X, [E|Xs]) :-
    I1 is I0+1,
-   list_index0_index_item_replaced(Es, I1,I, X, Xs).
+   replaceAtIndex0(Es, I1,I, X, Xs).
    
-
-replace_pos(State,X,Y,NewElem,Res):- 
-	replace_pos_index_column(State,X,1,Y,NewElem,Res).
+%REPLACE_PIECE ON BOARD
+replacePiece(State,X,Y,NewElem,Res):-
+	replacePiece_index_column(State,X,1,Y,NewElem,Res).
 	
-replace_pos_index_column([H|Es],X,Y,Y,NewElem,[NewRow|Es]):- 
-	list_nth1_item_replaced_NEW(H, X, NewElem, NewRow).
+replacePiece_index_column([H|Es],X,Y,Y,NewElem,[NewRow|Es]):- 
+	replaceAtIndex(H, X, NewElem, NewRow).
 	
-replace_pos_index_column([E|Es], X, Y0, Y, NewElem, [E|Xs]):-
+replacePiece_index_column([E|Es], X, Y0, Y, NewElem, [E|Xs]):-
 	Y1 is Y0+1,
-	replace_pos_index_column(Es,X,Y1,Y,NewElem, Xs).
+	replacePiece_index_column(Es,X,Y1,Y,NewElem, Xs).
+%/UTIL
+
 
 
 %CHECK_IF_SURROUNDED
@@ -85,7 +146,7 @@ rodeado(State,X,Y,Player,Opponent):-
 	rodeado(TmpState,X,UpY,Player,Opponent).
 	
 	
-is_surrounded(X,Y,Player,Opponent):- gamestate(G), rodeado(G,X,Y,Player,Opponent).
+is_surrounded(X,Y,Player,Opponent):- board(G), rodeado(G,X,Y,Player,Opponent).
 
 
 %AULA
@@ -138,9 +199,47 @@ jogar:-
 		
 /* 	1. Nao sei o que quer dizer com o predicado hass, mas acho que e isso que ele escreveu...
 *	Tentei procurar na documentacao por ha(...) e nao encontrei nada de util por isso vou assumir que e algo definido por nos, mas nao estou a ver o que.
-*  	2. Na linha 123 faltava o segundo argumento do jogaJogo (nao me lembro porque xD) mas acho que faz sentido ser o NovoTab. 
+*  	2. Na linha 124 faltava o segundo argumento do jogaJogo (nao me lembro porque xD) mas acho que faz sentido ser o NovoTab. 
 *	Mas nao sei porque o TabFinal nunca e usado...
 *
 */
 
+
+clearScreen:-
+	write('\33\[2J').
 	
+readInput(X,Y,Type):- 
+	repeat,
+		write('Coords (X-Y): '), 
+		read(X-Y), 
+		write('Type: '), 
+		read(Type).
+
+readPlay:-
+	repeat,
+		readInput(X,Y,Type).
+		%validInput(X,Y,Type,Board).
+
+
+
+
+game:- %game(Game) usar Game como uma lista (Board, whitePieces, blackPieces), whitePieces lista com (white, henge), blackPieces lista com (black, henge).
+	initialBoard(Board),
+	repeat,
+		clearScreen,
+		print_state(Board),
+		readPlay.
+
+game(Game):-
+	initialBoard(Game).
+
+
+%peças dos jogadores
+%printPieces:-
+
+
+
+
+
+
+%menu -> playgame(mode) -> init -> pvp(Board) -> loop -> clearScreen -> print_state -> readPlay.
