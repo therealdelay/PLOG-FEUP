@@ -4,21 +4,50 @@ board([[1,1,0,1,0],[1,1,2,0,0],[2,1,0,0,0],[0,0,0,0,0],[0,0,0,0,0]]).
 initialBoard([[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]]).
 board_size(5).
 
-initGamePvP(Game):-
-	initialBoard(Board),
-	WhiteInfo = [10,3,0],
-	BlackInfo = [10,2,0],
-	Player = whitePlayer,
-	Mode = pvp,
-	Game = [Board, WhiteInfo, BlackInfo, Player, Mode].
+%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%% UTILS %%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%
+
+ite(If,Then,_):- If, !, Then.
+ite(_,_,Else):- Else.
+
+clearScreen:-
+	write('\33\[2J').
+	
+readInput(X,Y,Type):- 
+	repeat,
+		write('Coords (X-Y): '), 
+		read(X-Y), 
+		write('Type: '), 
+		read(Type).
+
+readPlay:-
+	repeat,
+		readInput(X,Y,Type).
+		%validInput(X,Y,Type,Board).
+
+		
+%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%% GETS AND SETS %%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%
+
+getBoard(Game, Board):-
+	selectAtIndex(Game, 1, Board).
+
+setBoard(Game, Board, GameRes):-
+	replaceAtIndex(Game, 1, Board, GameRes).
+
+getBoardCell(Game, X, Y, BoardCell):-
+	getBoard(Game, Board),
+	selectPos(Board, X, Y, BoardCell).
+
+setBoardCell(Game, X, Y, BoardCell, GameRes):-
+	getBoard(Game, Board),
+	replacePiece(Board,X, Y, BoardCell, BoardRes),
+	setBoard(Game, BoardRes, GameRes).
 
 nextPlayer(Current, Next):-
 	ite(Current == whitePlayer, Next = blackPlayer, Next = whitePlayer).
-
-
-%IF THEN ELSE UTILS
-ite(If,Then,_):- If, !, Then.
-ite(_,_,Else):- Else.
 
 getCurrentPlayer(Game,CurPlayer):-
 	selectAtIndex(Game, 4, CurPlayer).
@@ -60,6 +89,12 @@ decHengePieces(Info, NewInfo):-
 	New is Old-1,
 	setHengePieces(Info, New, NewInfo).
 
+getMode(Game, Mode):-
+	selectAtIndex(Game, 5, Mode).
+
+
+
+
 
 %--------------------PRINT--------------------------
 %UTIL
@@ -86,8 +121,8 @@ invert_Y(Y,YInv):- YInv is 6 - Y.
 selectAtIndex(List, Index, Elem):-
 	nth1(Index, List, Elem).
 
-%SELECT_POS
-select_pos(State,X,Y,Elem):- 
+%SELECT POS
+selectPos(State,X,Y,Elem):- 
 	nth1(Y,State,Row), 
 	nth1(X,Row,Elem).
 
@@ -111,7 +146,6 @@ replacePiece_index_column([E|Es], X, Y0, Y, NewElem, [E|Xs]):-
 	Y1 is Y0+1,
 	replacePiece_index_column(Es,X,Y1,Y,NewElem, Xs).
 %/UTIL
-
 
 
 %CHECK_IF_SURROUNDED
@@ -205,21 +239,6 @@ jogar:-
 */
 
 
-clearScreen:-
-	write('\33\[2J').
-	
-readInput(X,Y,Type):- 
-	repeat,
-		write('Coords (X-Y): '), 
-		read(X-Y), 
-		write('Type: '), 
-		read(Type).
-
-readPlay:-
-	repeat,
-		readInput(X,Y,Type).
-		%validInput(X,Y,Type,Board).
-
 
 
 
@@ -243,3 +262,12 @@ game(Game):-
 
 
 %menu -> playgame(mode) -> init -> pvp(Board) -> loop -> clearScreen -> print_state -> readPlay.
+
+
+initGamePvP(Game):-
+	initialBoard(Board),
+	WhiteInfo = [10,3,0],
+	BlackInfo = [10,2,0],
+	Player = whitePlayer,
+	Mode = pvp,
+	Game = [Board, WhiteInfo, BlackInfo, Player, Mode].
