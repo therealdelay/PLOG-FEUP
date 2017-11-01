@@ -91,64 +91,64 @@ incScore(Info, NewInfo):-
 decWhiteRegPieces(Game, GameRes):-
 	getWhiteInfo(Game,Info),
 	decRegPieces(Info, NewInfo),
-	setWhiteInfo(Game, NewInfo).
+	setWhiteInfo(Game, NewInfo, GameRes).
 	
 incWhiteRegPieces(Game, GameRes):-
 	getWhiteInfo(Game,Info),
 	incRegPieces(Info, NewInfo),
-	setWhiteInfo(Game, NewInfo).
+	setWhiteInfo(Game, NewInfo, GameRes).
 
-decWhiteHengePieces(Info, NewInfo):-
+decWhiteHengePieces(Game, GameRes):-
 	getWhiteInfo(Game,Info),
 	decHengePieces(Info, NewInfo),
-	setWhiteInfo(Game, NewInfo).
+	setWhiteInfo(Game, NewInfo, GameRes).
 	
-incWhiteHengePieces(Info, NewInfo):-
+incWhiteHengePieces(Game, GameRes):-
 	getWhiteInfo(Game,Info),
 	incHengePieces(Info, NewInfo),
-	setWhiteInfo(Game, NewInfo).
+	setWhiteInfo(Game, NewInfo, GameRes).
 
-decWhiteScore(Info, NewInfo):-
+decWhiteScore(Game, GameRes):-
 	getWhiteInfo(Game,Info),
 	decScore(Info, NewInfo),
-	setWhiteInfo(Game, NewInfo).
+	setWhiteInfo(Game, NewInfo, GameRes).
 
-incWhiteScore(Info, NewInfo):-
+incWhiteScore(Game, GameRes):-
 	getWhiteInfo(Game,Info),
 	incScore(Info, NewInfo),
-	setWhiteInfo(Game, NewInfo).
+	setWhiteInfo(Game, NewInfo, GameRes).
 	
 	
 %BLACK_INTERFACE	
 decBlackRegPieces(Game, GameRes):-
 	getBlackInfo(Game,Info),
 	decRegPieces(Info, NewInfo),
-	setBlackInfo(Game, NewInfo).
+	setBlackInfo(Game, NewInfo, GameRes).
 	
 incBlackRegPieces(Game, GameRes):-
 	getBlackInfo(Game,Info),
 	incRegPieces(Info, NewInfo),
-	setBlackInfo(Game, NewInfo).
+	setBlackInfo(Game, NewInfo, GameRes).
 
-decBlackHengePieces(Info, NewInfo):-
+decBlackHengePieces(Game, GameRes):-
 	getBlackInfo(Game,Info),
 	decHengePieces(Info, NewInfo),
-	setBlackInfo(Game, NewInfo).
+	setBlackInfo(Game, NewInfo, GameRes).
 	
-incBlackHengePieces(Info, NewInfo):-
+incBlackHengePieces(Game, GameRes):-
 	getBlackInfo(Game,Info),
 	incHengePieces(Info, NewInfo),
-	setBlackInfo(Game, NewInfo).
+	setBlackInfo(Game, NewInfo, GameRes).
 
-decBlackScore(Info, NewInfo):-
+decBlackScore(Game, GameRes):-
 	getBlackInfo(Game,Info),
 	decScore(Info, NewInfo),
-	setBlackInfo(Game, NewInfo).
+	setBlackInfo(Game, NewInfo, GameRes).
 
-incBlackScore(Info, NewInfo):-
+incBlackScore(Game, GameRes):-
 	getBlackInfo(Game,Info),
 	incScore(Info, NewInfo),
-	setBlackInfo(Game, NewInfo).
+	setBlackInfo(Game, NewInfo, GameRes).
 
 getMode(Game, Mode):-
 	selectAtIndex(Game, 5, Mode).
