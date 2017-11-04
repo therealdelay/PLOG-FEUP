@@ -132,10 +132,79 @@ jogar:-
 *
 */
 
+/*
+*/
+
+getPlay(Game,Play):-
+	readPlay(Game,Play).
 
 
+applyPlay(Game,Play,GameRes):-
+	getPlayXCoord(Play,X),
+	getPlayYCoord(Play,Y),
+	getPlayPiece(Game,Play,Piece,GameTmp),
+	setBoardCell(GameTmp,X,Y,Piece,GameRes).
 
 
+checkInvalidMovesLeft(Game,Winner):-
+	getCurrentPlayer(Game,Player),
+	getPlayerInfo(Game,Player,Info),
+	getRegPieces(Info,RegPieces),
+	getHengePieces(Info,HengePieces),
+	ite((RegPieces == 0,HengePieces == 1),(getNextPlayer(Player,Winner)),fail).
+	
+
+checkPiecesLeft(Game,Winner):-
+	getPlayerInfo(Game,whitePlayer,WhiteInfo),
+	getPlayerInfo(Game,blackPlayer,BlackInfo),
+	getRegPieces(BlackInfo,BRegPieces),
+	getHengePieces(BlackInfo,BHengePieces),
+	getScore(BlackInfo,BScore),
+	getRegPieces(WhiteInfo,WRegPieces),
+	getHengePieces(WhiteInfo,WHengePieces),
+	getScore(WhiteInfo,WScore),
+	ite(
+		(BRegPieces == 0, BHengePieces == 0, WRegPieces == 0, WHengePieces == 0),
+		
+			ite(WScore >= BScore, Winner = whitePlayer, Winner = blackPlayer),
+			
+			fail
+	).
+	
+
+endOfGame(Game,Winner):-
+	checkInvalidMovesLeft(Game,Winner).
+
+	
+endOfGame(Game,Winner):-
+	checkPiecesLeft(Game,Winner).
+	
+updateBoard(Game):-
+	true.
+	
+	
+play:-
+	initGamePvP(Game),
+	playPvP(Game,Winner),
+	printWinner(Winner).
+	
+playPvP(Game,Winner):-
+	endOfGame(Game,Winner).
+	
+playPvP(Game,Winner):-
+	updateBoard(Game),
+	printGame(Game),
+	getPlay(Game,Play),
+	applyPlay(Game,Play,GameRes),
+	updateBoard(Game),
+	setNextPlayer(GameRes, GameRes2),
+	playPvP(GameRes2,Winner).
+	
+	
+	
+
+
+/*
 game:- %game(Game) usar Game como uma lista (Board, whitePieces, blackPieces), whitePieces lista com (white, henge), blackPieces lista com (black, henge).
 	initialBoard(Board),
 	repeat,
@@ -156,7 +225,7 @@ game(Game):-
 
 
 %menu -> playgame(mode) -> init -> pvp(Board) -> loop -> clearScreen -> print_state -> readPlay.
-
+*/
 
 initGamePvP(Game):-
 	initialBoard(Board),

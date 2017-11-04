@@ -17,7 +17,7 @@ setBoardCell(Game, X, Y, BoardCell, GameRes):-
 	replacePiece(Board,X, Y, BoardCell, BoardRes),
 	setBoard(Game, BoardRes, GameRes).
 
-nextPlayer(Current, Next):-
+getNextPlayer(Current, Next):-
 	ite(Current == whitePlayer, Next = blackPlayer, Next = whitePlayer).
 
 getCurrentPlayer(Game,CurPlayer):-
@@ -25,6 +25,11 @@ getCurrentPlayer(Game,CurPlayer):-
 
 setCurrentPlayer(Game, CurPlayer, GameRes):-
 	replaceAtIndex(Game, 4, CurPlayer, GameRes).
+	
+setNextPlayer(Game, GameRes):-
+	getCurrentPlayer(Game,Current),
+	getNextPlayer(Current,Next),
+	setCurrentPlayer(Game,Next,GameRes).
 
 getWhiteInfo(Game, WhiteInfo):-
 	selectAtIndex(Game, 2, WhiteInfo).
@@ -86,7 +91,9 @@ incScore(Info, NewInfo):-
 	New is Old+1,
 	setScore(Info, New, NewInfo).
 
-
+getPlayerInfo(Game,Player,Info):-
+	ite(Player == whitePlayer, getWhiteInfo(Game,Info), getBlackInfo(Game,Info)).
+	
 %WHITE_INTERFACE
 decWhiteRegPieces(Game, GameRes):-
 	getWhiteInfo(Game,Info),
@@ -149,6 +156,35 @@ incBlackScore(Game, GameRes):-
 	getBlackInfo(Game,Info),
 	incScore(Info, NewInfo),
 	setBlackInfo(Game, NewInfo, GameRes).
+	
 
 getMode(Game, Mode):-
 	selectAtIndex(Game, 5, Mode).
+	
+getPlayXCoord(Play,X):-
+	selectAtIndex(Play,1,X).
+	
+getPlayYCoord(Play,Y):-
+	selectAtIndex(Play,2,Y).
+
+getPlayType(Play,Type):-
+	selectAtIndex(Play,3,Type).
+	
+getPlayPiece(Game,Play,Piece,GameRes):-
+	getCurrentPlayer(Game,Player),
+	getPlayType(Play,Type),
+	ite(Player == whitePlayer,
+		ite(Type == 'h',
+			(Piece = 3, decWhiteHengePieces(Game,GameRes)),
+			
+			(Piece = 2, decWhiteRegPieces(Game,GameRes))
+		),
+		
+		ite(Type == 'h',
+			(Piece = 3, decBlackHengePieces(Game,GameRes)),
+			
+			(Piece = 1, decBlackRegPieces(Game,GameRes))
+		)
+	).
+	
+

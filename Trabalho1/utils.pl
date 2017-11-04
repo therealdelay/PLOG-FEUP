@@ -21,8 +21,8 @@ readInput(X,Y,Type,Game):-
 		read(X-Y),
 		validCoords(X,Y),
 		write('Type: '),
-		read(Type),
-		validType(Type,Game).
+		read(Type).
+		%validType(Type,Game).
 
 validCoords(X, Y):-
 	integer(X),
@@ -42,12 +42,13 @@ validType(_,_):-
 	write('Invalid input'), nl, fail. 
 
 
-readPlay(Game):-
-	getBoard(Game, Board),
+readPlay(Game,Play):-
+	%getBoard(Game, Board),
 	repeat,
-		clearScreen,
-		printBoard(Board),
-		readInput(X,Y,Type,Game).
+		%clearScreen,
+		%printBoard(Board),
+		readInput(X,Y,Type,Game),
+		Play = [X,Y,Type].
 
 % Print board
 p_u:- write(' ___ ___ ___ ___ ___ '), nl.
@@ -57,3 +58,32 @@ p_m([L|T]):- p_l(L), p_m(T).
 p_l([C|[]]):- convert(C,S),write('| '), write(S), write(' |'), nl, p_s.
 p_l([C|T]):- convert(C,S),write('| '), write(S), write(' '), p_l(T).
 printBoard(Board):- p_u, p_m(Board).
+
+
+printPlayerInfo(Player,Info,Current):-
+	getRegPieces(Info,RegPieces),
+	getHengePieces(Info,HengePieces),
+	getScore(Info,Score),
+	format('~s: ~d(R) - ~d(H) - ~d(S)', [Player,RegPieces,HengePieces,Score]),
+	ite(Current == 'true', write('       (C)'),true).
+
+%PRINT_PLAYERS_INFO
+printPlayersInfo(Game):-
+	getWhiteInfo(Game,WhiteInfo),
+	getBlackInfo(Game,BlackInfo),
+	getCurrentPlayer(Game,Player),
+	ite(Player == whitePlayer, (CurrWhite = 'true', CurrBlack = 'false'), ( CurrWhite = 'false', CurrBlack = 'true')),
+	printPlayerInfo("WHITE",WhiteInfo,CurrWhite), nl,
+	printPlayerInfo("BLACK",BlackInfo,CurrBlack), nl.
+	
+%PRINT_WINNER
+printWinner(Player):-
+	ite(Player == whitePlayer, Winner = "BLACK", Winner = "WHITE"),
+	format('CONGRATULATIONS: ~s WON',[Winner]).
+	
+%PRINT_GAME
+printGame(Game):-
+	getBoard(Game,Board),
+	clearScreen,
+	printBoard(Board), nl,
+	printPlayersInfo(Game), nl.
