@@ -39,18 +39,22 @@ replacePiece_index_column([H|Es],X,Y,Y,NewElem,[NewRow|Es]):-
 replacePiece_index_column([E|Es], X, Y0, Y, NewElem, [E|Xs]):-
 	Y1 is Y0+1,
 	replacePiece_index_column(Es,X,Y1,Y,NewElem, Xs).
-%/UTIL
+	
+playerPiece(blackPlayer,1).
+playerPiece(whitePlayer,2).
 
+%UTIL
 
 %CHECK_IF_SURROUNDED
 
-comp_piece(Curr, _):- Curr = 3.
-comp_piece(Curr, _):- Curr = -1.
-comp_piece(Curr, Opponent):- Curr = Opponent.
+compPiece(Curr, _):- Curr == 3.
+compPiece(Curr, _):- Curr == -1.
+compPiece(Curr, Opponent):- Curr == Opponent.
 
-rodeado(State,X,Y,_,_):-
-	select_pos(State,X,Y,Elem),
-	Elem = 0, !, fail.
+
+rodeado(State,X,Y,Player,_):-
+	selectPos(State,X,Y,Elem),
+	Elem == 0, fail, !.
 
 rodeado(_,6,Y,_,_) :- Y \= 6.
 rodeado(_,0,Y,_,_) :- Y \= 0.
@@ -58,12 +62,13 @@ rodeado(_,X,6,_,_) :- X \= 6.
 rodeado(_,X,0,_,_) :- X \= 0.
 
 rodeado(State,X,Y,_,Opponent):- 
-	select_pos(State,X,Y,Elem),
-	comp_piece(Elem,Opponent).
+	selectPos(State,X,Y,Elem),
+	playerPiece(Opponent,OpponentPiece),
+	compPiece(Elem,OpponentPiece).
 	
 
 rodeado(State,X,Y,Player,Opponent):-
-	replace_pos(State,X,Y,-1,TmpState),
+	replacePiece(State,X,Y,-1,TmpState),
 	LeftX is X-1,
 	RightX is X+1,
 	DownY is Y-1,
@@ -74,7 +79,7 @@ rodeado(State,X,Y,Player,Opponent):-
 	rodeado(TmpState,X,UpY,Player,Opponent).
 	
 	
-is_surrounded(X,Y,Player,Opponent):- board(G), rodeado(G,X,Y,Player,Opponent).
+isSurrounded(X,Y,Player,Opponent):- board(G), rodeado(G,X,Y,Player,Opponent).
 
 
 %AULA
@@ -135,8 +140,63 @@ jogar:-
 /*
 */
 
+checkInBoard(Play):-
+	getPlayXCoord(Play,X),
+	getPlayYCoord(Play,Y),
+	X > 0, X < 6,
+	Y > 0, Y < 6.
+	
+checkEmptyCell(Game,Play):-
+	getPlayXCoord(Play,X),
+	getPlayYCoord(Play,Y),
+	getBoardCell(Game,X,Y,Cell),
+	Cell == 0.
+
+checkRegPieceStock(Game):-
+	getCurrentPlayer(Game,Player),
+	getPlayerInfo(Game,Player,Info),
+	getRegPieces(Info,Pieces),
+	Pieces > 0.
+	
+checkHengePieceStock(Game):-
+	getCurrentPlayer(Game,Player),
+	getPlayerInfo(Game,Player,Info),
+	getHengePieces(Info,Pieces),
+	Pieces > 0.
+	
+checkPieceStock(Game,Play):-
+	getPlayType(Play,Type),
+	ite(Type == 'h',
+		checkHengePieceStock(Game),
+		
+		checkRegPieceStock(Game)
+	).
+
+/*
+checkValidPos(Game,Play):-
+	getPlayXCoord(Play,X),
+	getPlayYCoord(Play,Y),
+	getPlayType(Play,Type),
+	ite(Type \= 'h',
+		ite(isSurrounded(Game,X,Y)
+			checkHigherScore(Game,Play),
+			
+			true
+		),
+		true
+	).
+*/
+	
+validPlay(Game,Play):-
+	checkInBoard(Play),
+	checkPieceStock(Game,Play),
+	checkEmptyCell(Game,Play).
+	%checkValidPos(Game,Play).
+
 getPlay(Game,Play):-
-	readPlay(Game,Play).
+	repeat,
+		readPlay(Game,Play),
+		validPlay(Game,Play).
 
 
 applyPlay(Game,Play,GameRes):-
@@ -179,7 +239,7 @@ endOfGame(Game,Winner):-
 endOfGame(Game,Winner):-
 	checkPiecesLeft(Game,Winner).
 	
-updateBoard(Game):-
+updateGame(Game):-
 	true.
 	
 	
@@ -192,11 +252,11 @@ playPvP(Game,Winner):-
 	endOfGame(Game,Winner).
 	
 playPvP(Game,Winner):-
-	updateBoard(Game),
+	updateGame(Game),
 	printGame(Game),
 	getPlay(Game,Play),
 	applyPlay(Game,Play,GameRes),
-	updateBoard(Game),
+	updateGame(Game),
 	setNextPlayer(GameRes, GameRes2),
 	playPvP(GameRes2,Winner).
 	

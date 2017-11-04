@@ -26,9 +26,7 @@ readInput(X,Y,Type,Game):-
 
 validCoords(X, Y):-
 	integer(X),
-	integer(Y),
-	X > 0, X < 6,
-	Y > 0, Y < 6.
+	integer(Y).
 
 validCoords(_,_):-
 	write('Invalid input'), nl, fail.
