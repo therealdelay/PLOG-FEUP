@@ -1,6 +1,7 @@
 :-use_module(library(lists)).
 :-include('utils.pl').
 :-include('getsandsets.pl').
+:-include('menu.pl').
 
 board([[1,1,0,1,0],[1,1,2,0,0],[2,1,0,0,0],[0,0,0,0,0],[0,0,0,0,0]]).
 initialBoard([[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]]).
