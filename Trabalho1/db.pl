@@ -2,6 +2,7 @@
 :-include('utils.pl').
 :-include('getsandsets.pl').
 :-include('menu.pl').
+:-include('point2d.pl').
 
 board([[1,1,1,2,0],[1,1,2,1,2],[2,2,0,2,0],[0,0,0,0,0],[0,0,0,0,0]]).
 %board([[0,0,2,1,2],[1,2,1,1,2],[2,1,2,2,0],[0,0,0,0,0],[0,0,0,0,0]]).
@@ -207,6 +208,7 @@ validPlay(Game,Play):-
 getPlay(Game,Play):-
 	repeat,
 		readPlay(Game,Play),
+		write(Play),
 		validPlay(Game,Play).
 
 

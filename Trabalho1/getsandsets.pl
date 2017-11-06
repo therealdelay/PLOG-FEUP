@@ -160,15 +160,25 @@ incBlackScore(Game, GameRes):-
 
 getMode(Game, Mode):-
 	selectAtIndex(Game, 5, Mode).
+
+		
+createPlay(X,Y,Type,Play):-
+	createPoint2D(X,Y,Point),
+	Play = [Point,Type].
+
+getPlayPoint(Play, Point):-
+	selectAtIndex(Play,1,Point).
 	
 getPlayXCoord(Play,X):-
-	selectAtIndex(Play,1,X).
+	getPlayPoint(Play,Point),
+	getPoint2DXCoord(Point,X).
 	
 getPlayYCoord(Play,Y):-
-	selectAtIndex(Play,2,Y).
+	getPlayPoint(Play,Point),
+	getPoint2DYCoord(Point,Y).
 
 getPlayType(Play,Type):-
-	selectAtIndex(Play,3,Type).
+	selectAtIndex(Play,2,Type).
 	
 getPlayPiece(Game,Play,Piece,GameRes):-
 	getCurrentPlayer(Game,Player),

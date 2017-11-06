@@ -47,7 +47,7 @@ readPlay(Game,Play):-
 		%clearScreen,
 		%printBoard(Board),
 		readInput(X,Y,Type,Game),
-		Play = [X,Y,Type].
+		createPlay(X,Y,Type,Play).
 
 % Print board
 p_u:- write('  ___ ___ ___ ___ ___ '), nl.
