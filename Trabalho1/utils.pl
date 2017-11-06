@@ -7,6 +7,7 @@ convert(0,' ').
 convert(1,'B').
 convert(2,'W').
 convert(3,'H').
+convert(-1,'N').
 
 % If Then Else
 ite(If,Then,_):- If, !, Then.

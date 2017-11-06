@@ -3,7 +3,8 @@
 :-include('getsandsets.pl').
 :-include('menu.pl').
 
-board([[1,1,0,1,0],[1,1,2,0,0],[2,1,0,0,0],[0,0,0,0,0],[0,0,0,0,0]]).
+board([[1,1,1,2,0],[1,1,2,1,2],[2,2,0,2,0],[0,0,0,0,0],[0,0,0,0,0]]).
+%board([[0,0,2,1,2],[1,2,1,1,2],[2,1,2,2,0],[0,0,0,0,0],[0,0,0,0,0]]).
 initialBoard([[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]]).
 board_size(5).
  
@@ -52,11 +53,6 @@ compPiece(Curr, _):- Curr == 3.
 compPiece(Curr, _):- Curr == -1.
 compPiece(Curr, Opponent):- Curr == Opponent.
 
-
-rodeado(State,X,Y,Player,_):-
-	selectPos(State,X,Y,Elem),
-	Elem == 0, fail, !.
-
 rodeado(_,6,Y,_,_) :- Y \= 6.
 rodeado(_,0,Y,_,_) :- Y \= 0.
 rodeado(_,X,6,_,_) :- X \= 6.
@@ -67,20 +63,34 @@ rodeado(State,X,Y,_,Opponent):-
 	playerPiece(Opponent,OpponentPiece),
 	compPiece(Elem,OpponentPiece).
 	
-
+rodeado(State,X,Y,Player,_):-
+	selectPos(State,X,Y,Elem),
+	playerPiece(Player,PlayerPiece),
+	Elem == 0, !, fail.
+	
 rodeado(State,X,Y,Player,Opponent):-
 	replacePiece(State,X,Y,-1,TmpState),
+	%printBoard(State),
 	LeftX is X-1,
 	RightX is X+1,
 	DownY is Y-1,
 	UpY is Y+1,
-	rodeado(TmpState,LeftX,Y,Player,Opponent),
-	rodeado(TmpState,RightX,Y,Player,Opponent),
-	rodeado(TmpState,X,DownY,Player,Opponent),
-	rodeado(TmpState,X,UpY,Player,Opponent).
+	%write('1st'),nl,
+	rodeado(TmpState,LeftX,Y,Player,Opponent), !,
+	%write('2nd'),nl,
+	rodeado(TmpState,RightX,Y,Player,Opponent), !,
+	%write('3rd'),nl,
+	rodeado(TmpState,X,DownY,Player,Opponent), !,
+	%write('4th'),nl,
+	rodeado(TmpState,X,UpY,Player,Opponent), !.
 	
+rodeadoComp(Board,X,Y,Player,Opponent):-
+	selectPos(Board,X,Y,Elem),
+	playerPiece(Player,PlayerPiece),
+	Elem == PlayerPiece,
+	rodeado(Board,X,Y,Player,Opponent).
 	
-isSurrounded(X,Y,Player,Opponent):- board(G), rodeado(G,X,Y,Player,Opponent).
+isSurrounded(X,Y,Player,Opponent):- board(G), rodeadoComp(G,X,Y,Player,Opponent).
 
 
 %AULA
@@ -173,7 +183,6 @@ checkPieceStock(Game,Play):-
 		checkRegPieceStock(Game)
 	).
 
-/*
 checkValidPos(Game,Play):-
 	getPlayXCoord(Play,X),
 	getPlayYCoord(Play,Y),
@@ -186,7 +195,6 @@ checkValidPos(Game,Play):-
 		),
 		true
 	).
-*/
 	
 validPlay(Game,Play):-
 	checkInBoard(Play),
