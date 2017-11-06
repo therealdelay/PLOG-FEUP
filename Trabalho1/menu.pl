@@ -1,3 +1,7 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%% MENUS %%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%
+
 menu:-
 	clearScreen,
 	mainMenu.
@@ -27,11 +31,10 @@ mainMenu:-
 processOption(0):- !.
 processOption(Option):-
 	ite(Option == 1, playMenu, rulesMenu), !, nl,
-	read(_).
+	get_char(_), get_char(_).
 
 playMenu:-
 	play, !.
-
 
 rulesMenu:-
 	write('********************'),nl,
@@ -49,5 +52,5 @@ rulesMenu:-
 	write('-> Players must play all Henge pieces before their last move.'),nl,
 	write('-> It is not possible to pass a turn, so if a player has no valid moves, he loses.'),nl,
 	write('-> Press enter to get back.'),nl,
-	read(_),
+	get_char(_), get_char(_),
 	menu.
