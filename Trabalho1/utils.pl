@@ -50,13 +50,14 @@ readPlay(Game,Play):-
 		Play = [X,Y,Type].
 
 % Print board
-p_u:- write(' ___ ___ ___ ___ ___ '), nl.
-p_s:- write('|___|___|___|___|___|'), nl.
-p_m([]).
-p_m([L|T]):- p_l(L), p_m(T).
+p_u:- write('  ___ ___ ___ ___ ___ '), nl.
+p_s:- write(' |___|___|___|___|___|'), nl.
+p_m([],_).
+p_m([L|T],C):- write(C), C1 is C+1, p_l(L), p_m(T,C1).
 p_l([C|[]]):- convert(C,S),write('| '), write(S), write(' |'), nl, p_s.
 p_l([C|T]):- convert(C,S),write('| '), write(S), write(' '), p_l(T).
-printBoard(Board):- p_u, p_m(Board).
+p_x:- write('   1   2   3   4   5'), nl.
+printBoard(Board):- p_x, p_u, p_m(Board,1).
 
 
 printPlayerInfo(Player,Info,Current):-

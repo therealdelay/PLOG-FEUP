@@ -183,6 +183,7 @@ checkPieceStock(Game,Play):-
 		checkRegPieceStock(Game)
 	).
 
+/*
 checkValidPos(Game,Play):-
 	getPlayXCoord(Play,X),
 	getPlayYCoord(Play,Y),
@@ -195,6 +196,7 @@ checkValidPos(Game,Play):-
 		),
 		true
 	).
+*/
 	
 validPlay(Game,Play):-
 	checkInBoard(Play),
