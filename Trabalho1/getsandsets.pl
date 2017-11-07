@@ -19,6 +19,10 @@ setBoardCell(Game, X, Y, BoardCell, GameRes):-
 
 getNextPlayer(Current, Next):-
 	ite(Current == whitePlayer, Next = blackPlayer, Next = whitePlayer).
+	
+getOpponent(Game,Opponent):-
+	getCurrentPlayer(Game,Player),
+	getNextPlayer(Player,Opponent).
 
 getCurrentPlayer(Game,CurPlayer):-
 	selectAtIndex(Game, 4, CurPlayer).
@@ -51,7 +55,10 @@ getHengePieces(Info, HengePieces):-
 	
 getScore(Info, Score):-
 	selectAtIndex(Info, 3, Score).
-
+	
+getPlayerType(Info, PlayerType):-
+	selectAtIndex(Info, 4, PlayerType).
+	
 setRegPieces(Info, NewPieces, NewInfo):-
 	replaceAtIndex(Info, 1, NewPieces, NewInfo).
 
@@ -60,6 +67,9 @@ setHengePieces(Info, NewPieces, NewInfo):-
 	
 setScore(Info, NewScore, NewInfo):-
 	replaceAtIndex(Info, 3, NewScore, NewInfo).
+	
+setPlayerType(Info, NewPlayerType, NewInfo):-
+	replaceAtIndex(Info, 4, NewPlayerType, NewInfo).
 
 decRegPieces(Info, NewInfo):-
 	getRegPieces(Info, Old),
@@ -93,6 +103,9 @@ incScore(Info, NewInfo):-
 
 getPlayerInfo(Game,Player,Info):-
 	ite(Player == whitePlayer, getWhiteInfo(Game,Info), getBlackInfo(Game,Info)).
+	
+setPlayerInfo(Game,Player,Info,GameRes):-
+	ite(Player == whitePlayer, setWhiteInfo(Game,Info,GameRes), setBlackInfo(Game,Info,GameRes)).
 	
 %WHITE_INTERFACE
 decWhiteRegPieces(Game, GameRes):-
@@ -196,5 +209,4 @@ getPlayPiece(Game,Play,Piece,GameRes):-
 			(Piece = 1, decBlackRegPieces(Game,GameRes))
 		)
 	).
-	
 

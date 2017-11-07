@@ -84,12 +84,17 @@ printPlayersInfo(Game):-
 	
 %PRINT_WINNER
 printWinner(Player):-
-	ite(Player == whitePlayer, Winner = "BLACK", Winner = "WHITE"),
+	ite(Player == whitePlayer, Winner = "WHITE", Winner = "BLACK"),
 	format('CONGRATULATIONS: ~s WON',[Winner]).
 	
 %PRINT_GAME
 printGame(Game):-
 	getBoard(Game,Board),
-	clearScreen,
+	%clearScreen,
 	printBoard(Board), nl,
 	printPlayersInfo(Game), nl.
+	
+%WAIT_FOR_ENTER	
+waitForEnter:-
+	repeat,
+		get_char('\n').

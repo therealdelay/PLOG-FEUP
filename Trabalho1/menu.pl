@@ -23,6 +23,7 @@ mainMenu:-
 	read(Option),
 	integer(Option), Option >= 0, Option < 3, !,
 	processOption(Option).
+	
 mainMenu:-
 	clearScreen,
 	write('Error: invalid input.'), nl,
