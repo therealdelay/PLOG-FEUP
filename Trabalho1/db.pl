@@ -271,40 +271,41 @@ checkValidPos(Game,Play):-
 	).
 	
 	
-checkValidType(Play):-
+checkValidType(Play,Turn):-
 	getPlayType(Play,Type),
+	Turn > 1,
 	Type = 'n'.
 	
-checkValidType(Play):-
+checkValidType(Play,_):-
 	getPlayType(Play,Type),
 	Type = 'h'.
 
-validPlay(Game,Play):-
-	checkValidType(Play),
+validPlay(Game,Play,Turn):-
+	checkValidType(Play,Turn),
 	checkEmptyCell(Game,Play),
 	checkPieceStock(Game,Play),
 	checkInBoard(Play),
 	checkValidPos(Game,Play).
 
-getUserPlay(Game,Play):-
+getUserPlay(Game,Play,Turn):-
 	repeat,
 		readPlay(Game,Play),
-		validPlay(Game,Play).
+		validPlay(Game,Play,Turn).
 		
 getRandomPlay(Plays,ResPlay):-
 	random_member(ResPlay,Plays).
 	
-getEasyBotPlay(Game,ResPlay):-
-	findall(Play,validPlay(Game,Play),Plays),
+getEasyBotPlay(Game,ResPlay,Turn):-
+	findall(Play,validPlay(Game,Play,Turn),Plays),
 	%write(Plays), nl,
 	getRandomPlay(Plays,ResPlay).
 	
-getPlay(Game,Play):-    				%TODO/ Por isto bonito
+getPlay(Game,Play,Turn):-    				%TODO/ Por isto bonito
 	getCurrentPlayer(Game,Player),
 	getPlayerInfo(Game,Player,Info),
 	getPlayerType(Info,PlayerType),
-	ite(PlayerType == human, getUserPlay(Game,Play), true),
-	ite(PlayerType == easyBot, getEasyBotPlay(Game,Play), true).
+	ite(PlayerType == human, getUserPlay(Game,Play,Turn), true),
+	ite(PlayerType == easyBot, getEasyBotPlay(Game,Play,Turn), true).
 	
 applyPlay(Game,Play,GameRes):-
 	getPlayXCoord(Play,X),
@@ -377,26 +378,27 @@ updateGameCycle(Game,GameRes):-
 		
 play:-
 	initGamePvP(Game),
-	playPvP(Game,Winner),
+	playPvP(Game,Winner,1),
 	printWinner(Winner).
 
-playPvP(Game,Winner):-
+playPvP(Game,Winner,_):-
 	endOfGame(Game,Winner),
 	printGame(Game).
 	
-playPvP(Game,Winner):-
+playPvP(Game,Winner,Turn):-
 	printGame(Game),
-	getPlay(Game,Play),
+	getPlay(Game,Play,Turn),
 	applyPlay(Game,Play,GameTmp1),
 	updateGameCycle(GameTmp1,GameTmp2),
-	playPvP(GameTmp2,Winner).
+	NextTurn is Turn+1,
+	playPvP(GameTmp2,Winner,NextTurn).
 
 
 initGamePvP(Game):-
 	%board4(Board),
 	initialBoard(Board),
-	WhiteInfo = [10,3,0,human],
-	BlackInfo = [10,2,0,easyBot],
+	WhiteInfo = [10,3,0,easyBot],
+	BlackInfo = [10,2,0,human],
 	Player = whitePlayer,
 	Mode = pvp,
 	Game = [Board, WhiteInfo, BlackInfo, Player, Mode].
