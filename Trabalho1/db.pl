@@ -290,17 +290,13 @@ getUserPlay(Game,Play):-
 	repeat,
 		readPlay(Game,Play),
 		validPlay(Game,Play).
-
-	
+		
 getRandomPlay(Plays,ResPlay):-
-	%proper_length(Plays,Length),
-	%random_between(1,Length,PlayIndex),
-	%selectAtIndex(Plays,PlayIndex,ResPlay).
 	random_member(ResPlay,Plays).
 	
 getEasyBotPlay(Game,ResPlay):-
 	findall(Play,validPlay(Game,Play),Plays),
-	write(Plays), nl,
+	%write(Plays), nl,
 	getRandomPlay(Plays,ResPlay).
 	
 getPlay(Game,Play):-    				%TODO/ Por isto bonito
@@ -400,7 +396,7 @@ initGamePvP(Game):-
 	%board4(Board),
 	initialBoard(Board),
 	WhiteInfo = [10,3,0,human],
-	BlackInfo = [0,2,0,easyBot],
+	BlackInfo = [10,2,0,easyBot],
 	Player = whitePlayer,
 	Mode = pvp,
 	Game = [Board, WhiteInfo, BlackInfo, Player, Mode].

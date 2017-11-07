@@ -90,7 +90,7 @@ printWinner(Player):-
 %PRINT_GAME
 printGame(Game):-
 	getBoard(Game,Board),
-	%clearScreen,
+	clearScreen,
 	printBoard(Board), nl,
 	printPlayersInfo(Game), nl.
 	
