@@ -28,8 +28,6 @@ playType(n).
 playType(h).
  
 %-----------------------OPERATIONS-----------------------------
-%UTIL
-invert_Y(Y,YInv):- YInv is 6 - Y.
 
 %SELECT AT INDEX
 selectAtIndex(List, Index, Elem):-
@@ -62,8 +60,6 @@ replacePiece_index_column([E|Es], X, Y0, Y, NewElem, [E|Xs]):-
 	
 playerPiece(blackPlayer,1).
 playerPiece(whitePlayer,2).
-
-%UTIL
 
 %CHECK_IF_SURROUNDED
 
@@ -206,8 +202,6 @@ jogar:-
 *
 */
 
-/*
-*/
 
 checkInBoard(Play):-
 	getPlayXCoord(Play,X),

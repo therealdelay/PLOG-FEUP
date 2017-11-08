@@ -78,7 +78,9 @@ printPlayersInfo(Game):-
 	getWhiteInfo(Game,WhiteInfo),
 	getBlackInfo(Game,BlackInfo),
 	getCurrentPlayer(Game,Player),
-	ite(Player == whitePlayer, (CurrWhite = 'true', CurrBlack = 'false'), ( CurrWhite = 'false', CurrBlack = 'true')),
+	ite(Player == whitePlayer, 
+		(CurrWhite = 'true', CurrBlack = 'false'), 
+		( CurrWhite = 'false', CurrBlack = 'true')),
 	printPlayerInfo("WHITE",WhiteInfo,CurrWhite), nl,
 	printPlayerInfo("BLACK",BlackInfo,CurrBlack), nl.
 	
@@ -96,5 +98,7 @@ printGame(Game):-
 	
 %WAIT_FOR_ENTER	
 waitForEnter:-
-	repeat,
-		get_char('\n').
+	get_char(_), get_char(_).
+
+%Invert
+invert_Y(Y,YInv):- YInv is 6 - Y.
