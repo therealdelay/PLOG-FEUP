@@ -57,12 +57,12 @@ p_m([L|T],C):- write(C), C1 is C+1, p_l(L), p_m(T,C1).
 p_l([C|[]]):- convert(C,S),write('| '), write(S), write(' |'), nl, p_s.
 p_l([C|T]):- convert(C,S),write('| '), write(S), write(' '), p_l(T).
 p_x:-
-	write('  *******************'),nl,
-	write('  *******GoRoGo******'),nl,
+	write('  ******************'),nl,
+	write('  ******GoRoGo******'),nl,
  	write('   1   2   3   4   5'), nl.
 p_g:-
-	write('  *******GoRoGo******'),nl,
-	write('  *******************'),nl.
+	write('  ******GoRoGo******'),nl,
+	write('  ******************'),nl.
 printBoard(Board):- p_x, p_u, p_m(Board,1), p_g.
 
 
@@ -92,7 +92,7 @@ printWinner(Player):-
 %PRINT_GAME
 printGame(Game):-
 	getBoard(Game,Board),
-	clearScreen,
+	%clearScreen,
 	printBoard(Board), nl,
 	printPlayersInfo(Game), nl.
 	

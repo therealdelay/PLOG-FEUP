@@ -9,6 +9,8 @@ board([[1,1,1,0,0],[1,1,2,1,2],[2,2,0,2,0],[0,0,0,0,0],[0,0,0,0,0]]).
 
 board2([[0,0,0,0,0],[0,0,0,2,2],[0,0,2,1,1],[0,2,1,3,1],[2,1,1,1,0]]).
 
+board5([[0,0,0,0,0],[0,0,0,1,1],[0,0,1,2,2],[0,1,2,3,2],[1,2,2,2,0]]).
+
 board3([[0,0,1,3,0],[0,0,1,0,1],[2,2,0,1,0],[0,0,0,0,0],[0,0,0,0,0]]).
 
 board4([[0,0,0,1,0],[0,0,3,0,1],[0,0,0,1,0],[0,0,0,0,0],[0,0,0,0,0]]).
@@ -199,9 +201,11 @@ jogar:-
 *	Tentei procurar na documentacao por ha(...) e nao encontrei nada de util por isso vou assumir que e algo definido por nos, mas nao estou a ver o que.
 *  	2. Na linha 124 faltava o segundo argumento do jogaJogo (nao me lembro porque xD) mas acho que faz sentido ser o NovoTab. 
 *	Mas nao sei porque o TabFinal nunca e usado...
-*
 */
 
+
+
+%----------------VALID_PLAY---------------
 
 checkInBoard(Play):-
 	getPlayXCoord(Play,X),
@@ -281,10 +285,16 @@ validPlay(Game,Play,Turn):-
 	checkInBoard(Play),
 	checkValidPos(Game,Play).
 
+	
+	
+%--------------PLAYS----------------
+
 getUserPlay(Game,Play,Turn):-
 	repeat,
 		readPlay(Game,Play),
 		validPlay(Game,Play,Turn).
+
+
 		
 getRandomPlay(Plays,ResPlay):-
 	random_member(ResPlay,Plays).
@@ -293,20 +303,72 @@ getEasyBotPlay(Game,ResPlay,Turn):-
 	findall(Play,validPlay(Game,Play,Turn),Plays),
 	%write(Plays), nl,
 	getRandomPlay(Plays,ResPlay).
+
+
+evaluatePlay(PreviousGame,FutureGame,Value):-
+	getCurrentPlayer(Game,Player),
+	getPlayerInfo(PreviousGame,Player,PrevInfo),
+	getScore(PrevInfo,PrevScore),
+	getPlayerInfo(FutureGame,Player,FutureInfo),
+	getScore(FutureInfo,FutureScore),
 	
-getPlay(Game,Play,Turn):-    				%TODO/ Por isto bonito
+	Value is FutureScore-PrevScore. 
+
+getGameAfterPlay(Game,Play,GameRes):-
+	applyPlay(Game,Play,GameTmp1),
+	updateGameCycle(GameTmp1,GameRes).
+
+getPlayValues(_,[],[]).
+	
+getPlayValues(Game,[Play|OtherPlays],[Value|OtherValues]):-
+	getGameAfterPlay(Game,Play,FutureGame),
+	evaluatePlay(Game,FutureGame,Value),
+	getPlayValues(Game,OtherPlays,OtherValues).
+	
+	
+selectBestPlays([],[],_,[]).
+
+selectBestPlays([Play|OtherPlays],[Value|OtherValues],BestValue,[Play|OtherBestPlays]):- 	
+	Value == BestValue, !, 
+	selectBestPlays(OtherPlays,OtherValues,BestValue,OtherBestPlays).
+
+selectBestPlays([_|OtherPlays],[_|OtherValues],BestValue, BestPlays):- 
+	selectBestPlays(OtherPlays,OtherValues,BestValue,BestPlays).
+	
+	
+getBestPlays(Game, Plays, BestPlays):-
+	getPlayValues(Game,Plays,Values),
+	write(Values),nl,nl,
+	max_member(BestValue,Values),
+	write(BestValue),nl,nl,
+	selectBestPlays(Plays,Values,BestValue,BestPlays).
+	
+		
+getHardBotPlay(Game,ResPlay,Turn):-
+	findall(Play,validPlay(Game,Play,Turn),Plays),
+	getBestPlays(Game,Plays,BestPlays),
+	write(BestPlays), nl,
+	getRandomPlay(BestPlays,ResPlay).
+	
+
+getPlay(Game,Play,Turn):-    				%TODO Por isto bonito
 	getCurrentPlayer(Game,Player),
 	getPlayerInfo(Game,Player,Info),
 	getPlayerType(Info,PlayerType),
 	ite(PlayerType == human, getUserPlay(Game,Play,Turn), true),
-	ite(PlayerType == easyBot, getEasyBotPlay(Game,Play,Turn), true).
+	ite(PlayerType == easyBot, getEasyBotPlay(Game,Play,Turn), true),
+	ite(PlayerType == hardBot, getHardBotPlay(Game,Play,Turn), true).
 	
 applyPlay(Game,Play,GameRes):-
 	getPlayXCoord(Play,X),
 	getPlayYCoord(Play,Y),
 	getPlayPiece(Game,Play,Piece,GameTmp),
 	setBoardCell(GameTmp,X,Y,Piece,GameRes).
-
+	
+	
+	
+	
+%-------------END_OF_GAME--------------
 
 checkInvalidMovesLeft(Game,Winner):-
 	getCurrentPlayer(Game,Player),
@@ -345,7 +407,10 @@ endOfGame(Game,Winner):-
 endOfGame(Game,Winner):-
 	checkPiecesLeft(Game,Winner).
 
-	
+
+
+%-------------UPDATE_GAME-----------------
+
 clearBoard(Game,[],Game).
 
 clearBoard(Game, [Point|T], GameRes):-
@@ -389,10 +454,10 @@ playPvP(Game,Winner,Turn):-
 
 
 initGamePvP(Game):-
-	%board4(Board),
-	initialBoard(Board),
-	WhiteInfo = [10,3,0,easyBot],
-	BlackInfo = [10,2,0,human],
+	board5(Board),
+	%initialBoard(Board),
+	WhiteInfo = [10,3,0,human],
+	BlackInfo = [10,2,0,hardBot],
 	Player = whitePlayer,
 	Mode = pvp,
 	Game = [Board, WhiteInfo, BlackInfo, Player, Mode].
