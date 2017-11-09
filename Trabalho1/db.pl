@@ -303,16 +303,42 @@ getEasyBotPlay(Game,ResPlay,Turn):-
 	findall(Play,validPlay(Game,Play,Turn),Plays),
 	%write(Plays), nl,
 	getRandomPlay(Plays,ResPlay).
-
-
-evaluatePlay(PreviousGame,FutureGame,Value):-
-	getCurrentPlayer(Game,Player),
-	getPlayerInfo(PreviousGame,Player,PrevInfo),
-	getScore(PrevInfo,PrevScore),
-	getPlayerInfo(FutureGame,Player,FutureInfo),
-	getScore(FutureInfo,FutureScore),
 	
-	Value is FutureScore-PrevScore. 
+evaluateScoreDiff(PreviousGame, FutureGame, Value):-
+	getCurrentPlayer(Game,Player),
+	getPlayerInfo(PreviousGame,Player,PrevInfoPlayer),
+	getScore(PrevInfoPlayer,PrevScorePlayer),
+	getPlayerInfo(FutureGame,Player,FutureInfoPlayer),
+	getScore(FutureInfoPlayer,FutureScorePlayer),
+	Gains is FutureScorePlayer-PrevScorePlayer, 
+	
+	getCurrentPlayer(Game,Player),
+	getNextPlayer(Player,Opponent),
+	getPlayerInfo(PreviousGame,Opponent,PrevInfoOpponent),
+	getScore(PrevInfoOpponent,PrevScoreOpponent),
+	getPlayerInfo(FutureGame,Opponent,FutureInfoOpponent),
+	getScore(FutureInfoOpponent,FutureScoreOpponent),
+	Losses is FutureScoreOpponent-PrevScoreOpponent,
+	
+	Value is ((Gains-Losses)+10)/20.
+	
+evaluatePlayPosition(Play,_,_,0):-
+	getPlayXCoord(Play,X),
+	getPlayYCoord(Play,Y),
+	((X == 0, Y ==0) ; (X == 5, Y == 0) ; (X == 0, Y == 5) ; (X == 5, Y == 5)).
+	
+evaluatePlayPosition(Play,_,_,0.05):-
+	getPlayXCoord(Play,X),
+	getPlayYCoord(Play,Y),
+	(X == 0 ; X == 5; Y == 0 ; Y == 5).
+	
+evaluatePlayPosition(_,_,_,0.1).
+
+evaluatePlay(Play,PreviousGame,FutureGame,Value):-
+	evaluateScoreDiff(PreviousGame,FutureGame,Value1),
+	evaluatePlayPosition(Play,_,_,Value2),
+	
+	Value is (0.9 * Value1 + Value2).
 
 getGameAfterPlay(Game,Play,GameRes):-
 	applyPlay(Game,Play,GameTmp1),
@@ -322,7 +348,7 @@ getPlayValues(_,[],[]).
 	
 getPlayValues(Game,[Play|OtherPlays],[Value|OtherValues]):-
 	getGameAfterPlay(Game,Play,FutureGame),
-	evaluatePlay(Game,FutureGame,Value),
+	evaluatePlay(Play,Game,FutureGame,Value),
 	getPlayValues(Game,OtherPlays,OtherValues).
 	
 	
@@ -338,16 +364,16 @@ selectBestPlays([_|OtherPlays],[_|OtherValues],BestValue, BestPlays):-
 	
 getBestPlays(Game, Plays, BestPlays):-
 	getPlayValues(Game,Plays,Values),
-	write(Values),nl,nl,
+	%write(Values),nl,nl,
 	max_member(BestValue,Values),
-	write(BestValue),nl,nl,
+	%write(BestValue),nl,nl,
 	selectBestPlays(Plays,Values,BestValue,BestPlays).
 	
 		
 getHardBotPlay(Game,ResPlay,Turn):-
 	findall(Play,validPlay(Game,Play,Turn),Plays),
 	getBestPlays(Game,Plays,BestPlays),
-	write(BestPlays), nl,
+	%write(BestPlays), nl,
 	getRandomPlay(BestPlays,ResPlay).
 	
 
@@ -433,12 +459,19 @@ updateGameCycle(Game,GameRes):-
 	updateGame(Game,GameTmp1),
 	setNextPlayer(GameTmp1,GameTmp2),
 	updateGame(GameTmp2,GameRes).
+	%waitForEnter.
 	
 		
 play:-
 	initGamePvP(Game),
 	playPvP(Game,Winner,1),
 	printWinner(Winner).
+	
+play2(Game):-
+	playPvP(Game,Winner,1),
+	printWinner(Winner), !,
+	waitForEnter, !,
+	menu.
 
 playPvP(Game,Winner,_):-
 	endOfGame(Game,Winner),
@@ -454,8 +487,8 @@ playPvP(Game,Winner,Turn):-
 
 
 initGamePvP(Game):-
-	board5(Board),
-	%initialBoard(Board),
+	%board5(Board),
+	initialBoard(Board),
 	WhiteInfo = [10,3,0,human],
 	BlackInfo = [10,2,0,hardBot],
 	Player = whitePlayer,

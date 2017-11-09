@@ -70,6 +70,11 @@ setScore(Info, NewScore, NewInfo):-
 	
 setPlayerType(Info, NewPlayerType, NewInfo):-
 	replaceAtIndex(Info, 4, NewPlayerType, NewInfo).
+	
+setGamePlayerType(Game,Player,NewPlayerType,GameRes):-
+	getPlayerInfo(Game,Player,Info),
+	setPlayerType(Info,NewPlayerType,NewInfo),
+	setPlayerInfo(Game,Player,NewInfo,GameRes).
 
 decRegPieces(Info, NewInfo):-
 	getRegPieces(Info, Old),

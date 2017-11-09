@@ -102,3 +102,15 @@ waitForEnter:-
 
 %Invert
 invert_Y(Y,YInv):- YInv is 6 - Y.
+
+printPlayerType(human):- write(' HUMAN  ').
+printPlayerType(easyBot):- write('BOT EASY').
+printPlayerType(hardBot):- write('BOT HARD').
+	
+printPlayersType(Game):-
+	getPlayerInfo(Game,whitePlayer,WhiteInfo),
+	getPlayerType(WhiteInfo,WhitePlayer),
+	getPlayerInfo(Game,blackPlayer,BlackInfo),
+	getPlayerType(BlackInfo, BlackPlayer),
+	write('*   '), printPlayerType(WhitePlayer), write('        '), printPlayerType(BlackPlayer), write('   *'),nl.
+	
