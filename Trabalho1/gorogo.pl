@@ -273,7 +273,7 @@ play(Game):-
 	playCycle(Game,Winner,1),
 	printWinner(Winner), !,
 	waitForEnter, !,
-	menu.
+	gorogo.
 
 playCycle(Game,Winner,_):-
 	endOfGame(Game,Winner),
@@ -292,8 +292,8 @@ playCycle(Game,Winner,Turn):-
 initGamePvP(Game):-
 	%board5(Board),
 	initialBoard(Board),
-	WhiteInfo = [10,3,0,human],
-	BlackInfo = [10,2,0,easyBot],
+	WhiteInfo = [10,3,0,hardBot],
+	BlackInfo = [10,2,0,hardBot],
 	Player = whitePlayer,
 	Mode = pvp,
 	Game = [Board, WhiteInfo, BlackInfo, Player, Mode].
