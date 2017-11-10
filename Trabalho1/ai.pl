@@ -35,18 +35,18 @@ evaluatePlayPosition(Play,_,_,0):-
 	getPlayYCoord(Play,Y),
 	((X == 1, Y == 1) ; (X == 5, Y == 1) ; (X == 1, Y == 5) ; (X == 5, Y == 5)).
 	
-evaluatePlayPosition(Play,_,_,0.05):-
+evaluatePlayPosition(Play,_,_,0.025):-
 	getPlayXCoord(Play,X),
 	getPlayYCoord(Play,Y),
 	(X == 1 ; X == 5; Y == 1 ; Y == 5).
 	
-evaluatePlayPosition(_,_,_,0.1).
+evaluatePlayPosition(_,_,_,0.05).
 
 evaluatePlay(Play,PreviousGame,FutureGame,Value):-
 	evaluateScoreDiff(PreviousGame,FutureGame,Value1),
 	evaluatePlayPosition(Play,_,_,Value2),
 	
-	Value is (0.9 * Value1 + Value2).
+	Value is (0.925 * Value1 + Value2).
 
 	
 %GET_HARD_BOT_PLAY
