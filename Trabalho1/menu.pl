@@ -79,7 +79,8 @@ rulesMenu:-
 	write('-> Henge pieces are never conquered.'),nl,
 	write('-> A regular piece can\'t be played in a place surrounded by enemy pieces, unless that results in conquering enemy pieces or at least 1 of the surrounding pieces is Henge.'),nl,
 	write('-> Players must play all Henge pieces before their last move.'),nl,
-	write('-> It is not possible to pass a turn, so if a player has no valid moves, he loses.'),nl,nl,
+	write('-> It is not possible to pass a turn, so if a player has no valid moves, he loses.'),nl,
+	write('-> The game can never end tied, so in case of tie, the winner is always the white.'),nl,nl,
 	write('-> Press enter to get back.'),nl,
 	waitForEnter,
 	menu.
