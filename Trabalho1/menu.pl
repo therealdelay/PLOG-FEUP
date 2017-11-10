@@ -2,7 +2,7 @@
 %%%%%%%%% MENUS %%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%
 
-menu:-
+gorogo:-
 	clearScreen,
 	mainMenu.
 
@@ -33,33 +33,13 @@ mainMenu:-
 
 processOption(0):- !.
 processOption(Option):-
-	ite(Option == 1, (initGamePvP(Game),playMenuAlt(Game)), true), !,
+	ite(Option == 1, (initGamePvP(Game),playMenu(Game)), true), !,
 	ite(Option == 2, rulesMenu, true), !,
 	ite(Option == 3, aboutMenu, true), !, nl,
 	waitForEnter.
 
-playMenu:-
-	clearScreen,
-	write('********************'),nl,
-	write('*******GoRoGo*******'),nl,
-	write('********************'),nl,
-	write('* 1 - PvP          *'),nl,
-	write('* 2 - PvBot        *'),nl,
-	write('* 3 - BotvBot      *'),nl,
-	write('*                  *'),nl,
-	write('* 0 - Back         *'),nl,
-	write('*                  *'),nl,
-	write('********************'),nl,
-	write(' Option:            '),nl,
-	read(Option),
-	integer(Option), Option >= 0, Option < 4, !,
-	ite(Option == 1, play, true), !,
-	ite(Option == 2, play, true), !,
-	ite(Option == 3, play, true), !,
-	ite(Option == 0, menu, true), !.
-	
-	
-playMenuAlt(Game):-
+		
+playMenu(Game):-
 	clearScreen,
 	write('********************************'),nl,
 	write('*************GoRoGo*************'),nl,
@@ -83,7 +63,7 @@ playMenuAlt(Game):-
 	write(' Option:            '),nl,
 	read(Option),
 	integer(Option), Option >= 0, Option < 4, !,
-	ite(Option == 1, play2(Game), true), !,
+	ite(Option == 1, play(Game), true), !,
 	ite(Option == 2, playerConfigMenu(Game,whitePlayer), true), !,
 	ite(Option == 3, playerConfigMenu(Game, blackPlayer), true), !,
 	ite(Option == 0, menu, true), !.
@@ -98,9 +78,9 @@ playerConfigMenu(Game,Player):-
 	write(' Option:            '),nl,
 	read(Option),
 	integer(Option), Option > 0, Option < 4, !,
-	ite(Option == 1, (setGamePlayerType(Game,Player,human,GameRes), playMenuAlt(GameRes)), true), !,
-	ite(Option == 2, (setGamePlayerType(Game,Player,easyBot,GameRes), playMenuAlt(GameRes)), true), !,
-	ite(Option == 3, (setGamePlayerType(Game,Player,hardBot,GameRes), playMenuAlt(GameRes)), true), !.
+	ite(Option == 1, (setGamePlayerType(Game,Player,human,GameRes), playMenu(GameRes)), true), !,
+	ite(Option == 2, (setGamePlayerType(Game,Player,easyBot,GameRes), playMenu(GameRes)), true), !,
+	ite(Option == 3, (setGamePlayerType(Game,Player,hardBot,GameRes), playMenu(GameRes)), true), !.
 	
 
 playMenu:-
