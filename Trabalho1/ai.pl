@@ -14,14 +14,13 @@ getEasyBotPlay(Game,ResPlay,Turn):-
 
 %EVALUATE_PLAY
 evaluateScoreDiff(PreviousGame, FutureGame, Value):-
-	getCurrentPlayer(Game,Player),
+	getCurrentPlayer(PreviousGame,Player),
 	getPlayerInfo(PreviousGame,Player,PrevInfoPlayer),
 	getScore(PrevInfoPlayer,PrevScorePlayer),
 	getPlayerInfo(FutureGame,Player,FutureInfoPlayer),
 	getScore(FutureInfoPlayer,FutureScorePlayer),
 	Gains is FutureScorePlayer-PrevScorePlayer, 
 	
-	getCurrentPlayer(Game,Player),
 	getNextPlayer(Player,Opponent),
 	getPlayerInfo(PreviousGame,Opponent,PrevInfoOpponent),
 	getScore(PrevInfoOpponent,PrevScoreOpponent),
@@ -34,12 +33,12 @@ evaluateScoreDiff(PreviousGame, FutureGame, Value):-
 evaluatePlayPosition(Play,_,_,0):-
 	getPlayXCoord(Play,X),
 	getPlayYCoord(Play,Y),
-	((X == 0, Y ==0) ; (X == 5, Y == 0) ; (X == 0, Y == 5) ; (X == 5, Y == 5)).
+	((X == 1, Y == 1) ; (X == 5, Y == 1) ; (X == 1, Y == 5) ; (X == 5, Y == 5)).
 	
 evaluatePlayPosition(Play,_,_,0.05):-
 	getPlayXCoord(Play,X),
 	getPlayYCoord(Play,Y),
-	(X == 0 ; X == 5; Y == 0 ; Y == 5).
+	(X == 1 ; X == 5; Y == 1 ; Y == 5).
 	
 evaluatePlayPosition(_,_,_,0.1).
 
@@ -76,6 +75,7 @@ selectBestPlays([_|OtherPlays],[_|OtherValues],BestValue, BestPlays):-
 getBestPlays(Game, Plays, BestPlays):-
 	getPlayValues(Game,Plays,Values),
 	%write(Values),nl,nl,
+	%write(Plays),nl,nl,
 	max_member(BestValue,Values),
 	%write(BestValue),nl,nl,
 	selectBestPlays(Plays,Values,BestValue,BestPlays).

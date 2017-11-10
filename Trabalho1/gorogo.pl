@@ -75,7 +75,7 @@ isSurroundedOpponent(Game,Point,Henge):-
 	Elem == OpponentPiece,
 	surrounded(Board,X,Y,Opponent,Player,Henge).
 	
-isSurroundedPlayer(Game,Point,Invert,Henge):-
+isSurroundedPlayer(Game,Point,Henge):-
 	getBoard(Game,Board),
 	getCurrentPlayer(Game,Player),
 	getNextPlayer(Player,Opponent),
@@ -124,7 +124,7 @@ checkPieceStock(Game,Play):-
 
 checkPosSurroundedWithoutHenges(Game,Play):-
 	getPlayPoint(Play,Point),
-	isSurroundedPlayer(Game,Point,invert,f).
+	isSurroundedPlayer(Game,Point,f).
 	
 checkSameScoreAfterPlay(Game):-
 	getCurrentPlayer(Game,Player),
@@ -173,7 +173,7 @@ validPlay(Game,Play,Turn):-
 
 getUserPlay(Game,Play,Turn):-
 	repeat,
-		readPlay(Game,Play),
+		readPlay(Play),
 		validPlay(Game,Play,Turn).
 
 	
@@ -256,35 +256,37 @@ updateGame(Game,GameRes):-
 	%write(Points),nl,
 	clearBoard(Game,Points,GameRes).
 	
+	
+waitForBot(Game):-
+	getCurrentPlayer(Game,Player),
+	getPlayerInfo(Game,Player,Info),
+	getPlayerType(Info,PlayerType),
+	ite((PlayerType == easyBot ; PlayerType == hardBot),(write('  Press Enter to continue'),nl,waitForEnter),true).
+	
 updateGameCycle(Game,GameRes):-
 	updateGame(Game,GameTmp1),
 	setNextPlayer(GameTmp1,GameTmp2),
 	updateGame(GameTmp2,GameRes).
 	%waitForEnter.
 	
-		
-play:-
-	initGamePvP(Game),
-	playPvP(Game,Winner,1),
-	printWinner(Winner).
-	
-play2(Game):-
-	playPvP(Game,Winner,1),
+play(Game):-
+	playCycle(Game,Winner,1),
 	printWinner(Winner), !,
 	waitForEnter, !,
 	menu.
 
-playPvP(Game,Winner,_):-
+playCycle(Game,Winner,_):-
 	endOfGame(Game,Winner),
 	printGame(Game).
 	
-playPvP(Game,Winner,Turn):-
+playCycle(Game,Winner,Turn):-
 	printGame(Game),
+	%waitForBot(Game),
 	getPlay(Game,Play,Turn),
 	applyPlay(Game,Play,GameTmp1),
 	updateGameCycle(GameTmp1,GameTmp2),
 	NextTurn is Turn+1,
-	playPvP(GameTmp2,Winner,NextTurn).
+	playCycle(GameTmp2,Winner,NextTurn).
 
 
 initGamePvP(Game):-

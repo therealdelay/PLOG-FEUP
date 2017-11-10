@@ -47,7 +47,8 @@ clearScreen:-
 
 
 %READ_PLAY	
-readInput(X,Y,Type,Game):- 
+%readInput(X,Y,Type,Game):- 
+readInput(X,Y,Type):- 
 	repeat,
 		write('Coords (X-Y): '), 
 		read(X-Y),
@@ -72,12 +73,13 @@ validType(_,_):-
 	write('Invalid input'), nl, fail. 
 
 
-readPlay(Game,Play):-
+readPlay(Play):-
 	%getBoard(Game, Board),
 	repeat,
 		%clearScreen,
 		%printBoard(Board),
-		readInput(X,Y,Type,Game),
+		%readInput(X,Y,Type,Game),
+		readInput(X,Y,Type),
 		createPlay(X,Y,Type,Play).
 		
 
