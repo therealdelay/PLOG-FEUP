@@ -149,7 +149,7 @@ printGame(Game):-
 	
 %WAIT_FOR_ENTER	
 waitForEnter:-
-	get_char(_).
+	readString(_).
 	
 %PRINT_PLAYER_TYPE
 printPlayerType(human):- write(' HUMAN  ').

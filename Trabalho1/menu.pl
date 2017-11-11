@@ -23,6 +23,7 @@ mainMenu:-
 	write('********************'),nl,
 	write(' Option:            '),nl,
 	readOption(Option),
+	write(Option),nl,
 	integer(Option), Option >= 0, Option < 4, !,
 	processOption(Option).
 	

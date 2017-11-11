@@ -187,7 +187,7 @@ checkInvalidMovesLeft(Game,Winner):-
 	getPlayerInfo(Game,Player,Info),
 	getRegPieces(Info,RegPieces),
 	getHengePieces(Info,HengePieces),
-	ite((RegPieces == 0,HengePieces == 1),
+	ite((RegPieces == 0,HengePieces > 0),
 		getNextPlayer(Player,Winner),
 		
 		fail
