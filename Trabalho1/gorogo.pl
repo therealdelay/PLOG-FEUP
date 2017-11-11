@@ -277,5 +277,4 @@ initGamePvP(Game):-
 	WhiteInfo = [10,3,0,human],
 	BlackInfo = [10,2,0,easyBot],
 	Player = whitePlayer,
-	Mode = pvp,
-	Game = [Board, WhiteInfo, BlackInfo, Player, Mode].
+	Game = [Board, WhiteInfo, BlackInfo, Player].

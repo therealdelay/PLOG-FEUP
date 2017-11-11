@@ -58,9 +58,7 @@ readString([Char|OtherChars]):-
 %READ_PLAY_COORDENATES	
 readPlayCoords(X,Y):-
 	readString(String),
-	%write(String),nl,
 	proper_length(String,Length),
-	%write(Length), nl,
 	Length = 4,
 	selectAtIndex(String,2,SeparatorCode),
 	SeparatorCode = 45,
