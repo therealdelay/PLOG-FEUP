@@ -22,7 +22,7 @@ mainMenu:-
 	write('*                  *'),nl,
 	write('********************'),nl,
 	write(' Option:            '),nl,
-	read(Option),
+	readOption(Option),
 	integer(Option), Option >= 0, Option < 4, !,
 	processOption(Option).
 	
@@ -61,26 +61,33 @@ playMenu(Game):-
 	write('*                              *'),nl,
 	write('********************************'),nl,
 	write(' Option:            '),nl,
-	read(Option),
+	readOption(Option),
 	integer(Option), Option >= 0, Option < 4, !,
 	ite(Option == 1, play(Game), true), !,
 	ite(Option == 2, playerConfigMenu(Game,whitePlayer), true), !,
 	ite(Option == 3, playerConfigMenu(Game, blackPlayer), true), !,
-	ite(Option == 0, menu, true), !.
+	ite(Option == 0, gorogo, true), !.
+	
+	
+playMenu(Game):-
+	clearScreen,
+	write('Error: invalid input.'), nl,
+	playMenu(Game).
 	
 	
 playerConfigMenu(Game,Player):-
 	nl,nl,
 	write(' Select new player type: '),nl,
-	write('      1- Human'),nl,
-	write('      2- Easy Bot'),nl,
-	write('      3- Hard Bot'),nl,
+	write('    1- Human'),nl,
+	write('    2- Easy Bot'),nl,
+	write('    3- Hard Bot'),nl,
 	write(' Option:            '),nl,
-	read(Option),
-	integer(Option), Option > 0, Option < 4, !,
-	ite(Option == 1, (setGamePlayerType(Game,Player,human,GameRes), playMenu(GameRes)), true), !,
-	ite(Option == 2, (setGamePlayerType(Game,Player,easyBot,GameRes), playMenu(GameRes)), true), !,
-	ite(Option == 3, (setGamePlayerType(Game,Player,hardBot,GameRes), playMenu(GameRes)), true), !.
+	repeat,
+		readOption(Option),
+		integer(Option), Option > 0, Option < 4, !,
+		ite(Option == 1, (setGamePlayerType(Game,Player,human,GameRes), playMenu(GameRes)), true), !,
+		ite(Option == 2, (setGamePlayerType(Game,Player,easyBot,GameRes), playMenu(GameRes)), true), !,
+		ite(Option == 3, (setGamePlayerType(Game,Player,hardBot,GameRes), playMenu(GameRes)), true), !.
 	
 
 playMenu:-
@@ -108,7 +115,7 @@ rulesMenu:-
 	write('-> The game can never end tied, so in case of tie, the winner is always the white.'),nl,nl,
 	write('-> Press enter to get back.'),nl,
 	waitForEnter,
-	menu.
+	gorogo.
 
 aboutMenu:-
 	clearScreen,
@@ -129,4 +136,4 @@ aboutMenu:-
 	write('The Henge pieces are considered the key to making GoRoGo an exciting alternative to its ancestor, Go.'),nl,nl,
 	write('-> Press enter to get back.'),nl,
 	waitForEnter,
-	menu.
+	gorogo.

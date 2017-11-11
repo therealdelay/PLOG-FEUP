@@ -74,15 +74,11 @@ selectBestPlays([_|OtherPlays],[_|OtherValues],BestValue, BestPlays):-
 	
 getBestPlays(Game, Plays, BestPlays):-
 	getPlayValues(Game,Plays,Values),
-	%write(Values),nl,nl,
-	%write(Plays),nl,nl,
 	max_member(BestValue,Values),
-	%write(BestValue),nl,nl,
 	selectBestPlays(Plays,Values,BestValue,BestPlays).
 	
 		
 getHardBotPlay(Game,ResPlay,Turn):-
 	findall(Play,validPlay(Game,Play,Turn),Plays),
 	getBestPlays(Game,Plays,BestPlays),
-	%write(BestPlays), nl,
 	getRandomPlay(BestPlays,ResPlay).

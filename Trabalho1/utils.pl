@@ -42,43 +42,59 @@ replacePiece_index_column([E|Es], X, Y0, Y, NewElem, [E|Xs]):-
 	Y1 is Y0+1,
 	replacePiece_index_column(Es,X,Y1,Y,NewElem, Xs).
 
+%CLEAR_SCREEN	
 clearScreen:-
 	write('\33\[2J').
 
+%CONVERT_ASCII_CODE_TO_NUMBER
+codeToNumber(Code,Value):-
+	Value is Code-48 .
+
+%READ_STRING
+readString([Char|OtherChars]):-
+	get_code(Char),
+	ite(Char = 10, (OtherChars = [],true), readString(OtherChars)).
+
+%READ_PLAY_COORDENATES	
+readPlayCoords(X,Y):-
+	readString(String),
+	%write(String),nl,
+	proper_length(String,Length),
+	%write(Length), nl,
+	Length = 4,
+	selectAtIndex(String,2,SeparatorCode),
+	SeparatorCode = 45,
+	selectAtIndex(String,1,XCode),
+	selectAtIndex(String,3,YCode),
+	codeToNumber(XCode,X),
+	codeToNumber(YCode,Y).
+	
+readPlayCoords(_,_):-
+	write('Invalid input'), nl, nl, fail.
+	
+%READ_PLAY_PIECE_TYPE
+readPlayPieceType(Type):-
+	readString(String),
+	selectAtIndex(String,1,TypeCode),
+	char_code(Type,TypeCode).
+	
+%READ_MENU_OPTION
+readOption(Option):-
+	readString(String),
+	selectAtIndex(String,1,OptionCode),
+	codeToNumber(OptionCode,Option).
 
 %READ_PLAY	
-%readInput(X,Y,Type,Game):- 
 readInput(X,Y,Type):- 
 	repeat,
 		write('Coords (X-Y): '), 
-		read(X-Y),
-		validCoords(X,Y),
-		write('Type: '),
-		read(Type).
-		%validType(Type,Game).
-
-validCoords(X, Y):-
-	integer(X),
-	integer(Y).
-
-validCoords(_,_):-
-	write('Invalid input'), nl, fail.
-
-validType(Type,Game):-
-	getCurrentPlayer(Game, Player),
-	ite((Player == blackPlayer, (Type == 'w' ; Type == 'W')), fail, true),
-	ite((Player == whitePlayer, (Type == 'b' ; Type == 'B')), fail, true).
-
-validType(_,_):-
-	write('Invalid input'), nl, fail. 
-
+		readPlayCoords(X,Y),
+		write('Type (n or h): '),
+		readPlayPieceType(Type).
+		
 
 readPlay(Play):-
-	%getBoard(Game, Board),
 	repeat,
-		%clearScreen,
-		%printBoard(Board),
-		%readInput(X,Y,Type,Game),
 		readInput(X,Y,Type),
 		createPlay(X,Y,Type,Play).
 		
@@ -127,13 +143,13 @@ printWinner(Player):-
 %PRINT_GAME
 printGame(Game):-
 	getBoard(Game,Board),
-	%clearScreen,
+	clearScreen,
 	printBoard(Board), nl,
 	printPlayersInfo(Game), nl.
 	
 %WAIT_FOR_ENTER	
 waitForEnter:-
-	get_char(_), get_char(_).
+	get_char(_).
 	
 %PRINT_PLAYER_TYPE
 printPlayerType(human):- write(' HUMAN  ').
@@ -146,4 +162,3 @@ printPlayersType(Game):-
 	getPlayerInfo(Game,blackPlayer,BlackInfo),
 	getPlayerType(BlackInfo, BlackPlayer),
 	write('*   '), printPlayerType(WhitePlayer), write('        '), printPlayerType(BlackPlayer), write('   *'),nl.
-	

@@ -7,22 +7,7 @@
 :-include('ai.pl').
 :-include('play.pl').
 
-board([[1,1,1,0,0],[1,1,2,1,2],[2,2,0,2,0],[0,0,0,0,0],[0,0,0,0,0]]).
-
-board2([[0,0,0,0,0],[0,0,0,2,2],[0,0,2,1,1],[0,2,1,3,1],[2,1,1,1,0]]).
-
-%board5([[0,0,0,0,0],[0,0,0,1,1],[0,0,1,2,2],[0,1,2,3,2],[1,2,2,2,0]]).
-
-board3([[0,0,1,3,0],[0,0,1,0,1],[2,2,0,1,0],[0,0,0,0,0],[0,0,0,0,0]]).
-
-board4([[0,0,0,1,0],[0,0,3,0,1],[0,0,0,1,0],[0,0,0,0,0],[0,0,0,0,0]]).
-
-%board([[0,0,2,1,2],[1,2,1,1,2],[2,1,2,2,0],[0,0,0,0,0],[0,0,0,0,0]]).
-
-board5([[0,0,2,0,0],[0,3,0,3,2],[2,2,3,1,3],[2,1,1,1,2],[0,0,0,2,0]]).
 initialBoard([[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]]).
-
-boardSize(5).
 
 player(human).
 player(easyBot).
@@ -33,7 +18,6 @@ playType(h).
  	
 playerPiece(blackPlayer,1).
 playerPiece(whitePlayer,2).
-
 
 %CHECK_IF_SURROUNDED
 compPiece(Curr,_,t):- Curr == 3.
@@ -179,7 +163,7 @@ getUserPlay(Game,Play,Turn):-
 
 	
 
-getPlay(Game,Play,Turn):-    				%TODO Por isto bonito
+getPlay(Game,Play,Turn):-
 	getCurrentPlayer(Game,Player),
 	getPlayerInfo(Game,Player,Info),
 	getPlayerType(Info,PlayerType),
@@ -254,7 +238,6 @@ clearBoard(Game, [Point|T], GameRes):-
 	
 updateGame(Game,GameRes):-
 	findall(Point, isSurroundedOpponent(Game,Point,t), Points),
-	%write(Points),nl,
 	clearBoard(Game,Points,GameRes).
 	
 	
@@ -268,7 +251,6 @@ updateGameCycle(Game,GameRes):-
 	updateGame(Game,GameTmp1),
 	setNextPlayer(GameTmp1,GameTmp2),
 	updateGame(GameTmp2,GameRes).
-	%waitForEnter.
 	
 play(Game):-
 	playCycle(Game,Winner,1),
@@ -282,7 +264,7 @@ playCycle(Game,Winner,_):-
 	
 playCycle(Game,Winner,Turn):-
 	printGame(Game),
-	%waitForBot(Game),
+	waitForBot(Game),
 	getPlay(Game,Play,Turn),
 	applyPlay(Game,Play,GameTmp1),
 	updateGameCycle(GameTmp1,GameTmp2),
@@ -291,10 +273,9 @@ playCycle(Game,Winner,Turn):-
 
 
 initGamePvP(Game):-
-	%board5(Board),
 	initialBoard(Board),
-	WhiteInfo = [10,3,0,hardBot],
-	BlackInfo = [10,2,0,hardBot],
+	WhiteInfo = [10,3,0,human],
+	BlackInfo = [10,2,0,easyBot],
 	Player = whitePlayer,
 	Mode = pvp,
 	Game = [Board, WhiteInfo, BlackInfo, Player, Mode].
