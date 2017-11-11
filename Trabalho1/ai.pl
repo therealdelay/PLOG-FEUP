@@ -46,7 +46,7 @@ evaluatePlay(Play,PreviousGame,FutureGame,Value):-
 	evaluateScoreDiff(PreviousGame,FutureGame,Value1),
 	evaluatePlayPosition(Play,_,_,Value2),
 	
-	Value is (0.925 * Value1 + Value2).
+	Value is (0.95 * Value1 + Value2).
 
 	
 %GET_HARD_BOT_PLAY
