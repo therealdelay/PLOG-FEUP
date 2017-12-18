@@ -40,6 +40,14 @@ labelMatrix([H|T],[H|T2]):-
 	labeling([all],H),
 	labelMatrix(T,T2).
 	
+
+aut(Vars, Sum) :-
+	automaton(Vars,_, Vars, 
+	[source(q0), sink(q2)],
+	[arc(q0,0,q1), arc(q0,1,q0), arc(q0,2,q0), arc(q0,3,q0), arc(q0,4,q0), 
+	 arc(q1,0,q2), arc(q1,1,q1,[C+1]), arc(q1,2,q1,[C+2]), arc(q1,3,q1,[C+3]), arc(q1,4,q1,[C+4]),
+     arc(q2,1,q2), arc(q2,2,q2), arc(q2,3,q2), arc(q2,4,q2)],
+	[C],[0],[Sum]).	
 	
 getCellsInBetween(_,StartIdx,StartIdx,[]).
 	
@@ -67,15 +75,19 @@ restrictRows([],[]).
 
 restrictRows([Row|OtherRows], [Value|OtherValues]):-
 	nvalue(5,Row),
+	aut(Row, Value),
+	
+	/*
 	count(0,Row,#=,2),
 	element(Block1Idx,Row,0),
 	element(Block2Idx,Row,0),
 	Block1Idx #< Block2Idx,
 	
+	
+	
 	getCellsInBetween(Row,Block1Idx,Block2Idx,CellsInBetween),
 	sum(CellsInBetween,#=,Value),
 	
-	/*
 	getCellsNotBlocks(Row,1,5,Block1Idx,Block2Idx,CellsNotBlocks),
 	all_distinct(CellsNotBlocks),
 	*/
@@ -90,6 +102,9 @@ restrictColumns(_,_,[_|[]]).
 restrictColumns(Matrix, ColIndex, [Value|OtherValues]):-
 	maplistelem(ColIndex,Matrix,Col),
 	nvalue(5,Col),
+	
+	aut(Col, Value),
+	/*
 	count(0,Col,#=,2),
 	element(Block1Idx,Col,0),
 	element(Block2Idx,Col,0),
@@ -97,7 +112,7 @@ restrictColumns(Matrix, ColIndex, [Value|OtherValues]):-
 	
 	getCellsInBetween(Col,Block1Idx,Block2Idx,CellsInBetween),
 	sum(CellsInBetween,#=,Value),
-	/*
+	
 	getCellsNotBlocks(Col,1,5,Block1Idx,Block2Idx,CellsNotBlocks),
 	all_distinct(CellsNotBlocks),
 	*/
@@ -132,3 +147,10 @@ doppelblock(N,Rows,Columns):-
 	restrictRows(Matrix, Rows),
 	restrictColumnsIdx(Matrix,Columns),
 	labelMatrix(Matrix,Res),write(Res),nl,nl,printBoard(Res).
+	
+
+at_most_two_consecutive_ones(Vars) :-
+	automaton(Vars,[ source(n),sink(n),sink(n1),sink(n2) ],
+	[ arc(n, 0, n),arc(n, 1, n1),arc(n1, 1, n2),arc(n1, 0, n), arc(n2, 0, n) ]).
+
+	
