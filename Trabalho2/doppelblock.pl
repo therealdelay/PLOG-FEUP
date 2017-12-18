@@ -1,6 +1,7 @@
 :-use_module(library(lists)).
 :-use_module(library(clpfd)).
-
+:-include('menu.pl').
+:-include('utils.pl').
 
 %CONVERTS the list symbol to the board symbol
 convert(X,X).
