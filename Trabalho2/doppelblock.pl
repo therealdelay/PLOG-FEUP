@@ -1,50 +1,7 @@
 :-use_module(library(lists)).
 :-use_module(library(clpfd)).
-
-
-
-reset_timer :- statistics(walltime,_).	
-print_time :-
-	statistics(walltime,[_,T]),
-	TS is ((T//10)*10)/1000,
-	nl, write('Time: '), write(TS), write('s'), nl, nl.
-
-%CONVERTS the list symbol to the board symbol
-convert(X,X).
-
-%PRINT_BOARD
-
-printBorderTimes(_, Times, Times).
-
-printBorderTimes(Separator, Curr, Times):-
-	write(Separator),
-	Next is Curr+1,
-	printBorderTimes(Separator, Next, Times).
-
-printBorder(Init, Separator, Times):-
-	write(Init),
-	printBorderTimes(Separator, 0, Times),
-	nl.
-
-p_u:- write('  ___ ___ ___ ___ ___ ___ '), nl.
-p_s:- write(' |___|___|___|___|___|___|'), nl.
-
-p_m([],_).
-p_m([L|T],C):- 
-	write(C), 
-	C1 is C+1, 
-	proper_length(L,Length),
-	p_l(L,Length), 
-	p_m(T,C1).
-
-p_l([C|[]],Length):- convert(C,S),write('| '), write(S), write(' |'), nl, printBorder(' |','___|',Length).
-p_l([C|T],Length):- convert(C,S),write('| '), write(S), write(' '), p_l(T,Length).
-
-printBoard(Board):- 
-	proper_length(Board,Length),
-	printBorder('  ', '___ ',Length),
-	p_m(Board,1).
-
+:-include('menu.pl').
+:-include('utils.pl').
 
 maplistelem(Pos, Xs, Ys) :-
     (   foreach(X,Xs),
@@ -107,6 +64,22 @@ createAllArcs(Max,Counter,Arcs):-
 	append(Q0Arcs,Q1Arcs,TmpArcs),
 	append(TmpArcs,Q2Arcs,Arcs), !.
 
+createCardinalityRestraints(MaxDomain,MaxDomain,[Card]):-
+	Card = MaxDomain-1.
+	
+createCardinalityRestraints(0,MaxDomain,[Card|Others]):-
+	Card = 0-2,
+	createCardinalityRestraints(1,MaxDomain,Others).
+
+createCardinalityRestraints(Val,MaxDomain,[Card|Others]):-
+	Card = Val-1,
+	NextVal #= Val+1,
+	createCardinalityRestraints(NextVal,MaxDomain,Others).
+
+createCardinalityRestraints(DomainMax, Cardinality):-
+	createCardinalityRestraints(0,DomainMax,Cardinality).
+	
+
 restrictLine(Vars, Max, Sum):-
 	createAllArcs(Max,C,Arcs),
 	automaton(Vars, _, Vars, [source(q0), sink(q2)], Arcs, [C], [0], [Sum]).
@@ -144,25 +117,24 @@ aut(Vars, Sum) :-
 */
 	
 	
-restrictRows([],[],_,_).
+restrictRows([],[],_,_,_).
 
-restrictRows([Row|OtherRows], [Value|OtherValues], DiffValues, DomainMax):-
-	nvalue(DiffValues,Row),
+restrictRows([Row|OtherRows], [Value|OtherValues], DiffValues, DomainMax, Cardinality):-
+	global_cardinality(Row, Cardinality),
 	restrictLine(Row,DomainMax,Value),
-	/*global_cardinality(Row,[0-2,1-1,2-1,3-1,4-1]),*/
-	restrictRows(OtherRows,OtherValues,DiffValues,DomainMax).
+	restrictRows(OtherRows,OtherValues,DiffValues,DomainMax, Cardinality).
 
-restrictColumnsIdx(Matrix, Values, DiffValues, DomainMax):-
-	restrictColumns(Matrix,1,Values,DiffValues,DomainMax).
+restrictColumnsIdx(Matrix, Values, DiffValues, DomainMax,Cardinality):-
+	restrictColumns(Matrix,1,Values,DiffValues,DomainMax,Cardinality).
 	
-restrictColumns(_,_,[_|[]],_,_).
+restrictColumns(_,_,[_|[]],_,_,_).
 
-restrictColumns(Matrix, ColIndex, [Value|OtherValues], DiffValues, DomainMax):-
+restrictColumns(Matrix, ColIndex, [Value|OtherValues], DiffValues, DomainMax, Cardinality):-
 	maplistelem(ColIndex,Matrix,Col),
-	nvalue(DiffValues,Col),
+	global_cardinality(Col,Cardinality),
 	restrictLine(Col,DomainMax,Value),
 	NextIdx #= ColIndex + 1,
-	restrictColumns(Matrix, NextIdx,OtherValues,DiffValues,DomainMax).
+	restrictColumns(Matrix, NextIdx,OtherValues,DiffValues,DomainMax,Cardinality).
 
 
 doppelblock(N,Rows,Columns):-
@@ -170,8 +142,9 @@ doppelblock(N,Rows,Columns):-
 	defNDomain(N,Matrix),
 	DiffValues #= N-1,
 	DomainMax #= N-2,
-	restrictRows(Matrix,Rows,DiffValues,DomainMax),
-	restrictColumnsIdx(Matrix,Columns,DiffValues,DomainMax),
+	createCardinalityRestraints(DomainMax,Cardinality),
+	restrictRows(Matrix,Rows,DiffValues,DomainMax,Cardinality),
+	restrictColumnsIdx(Matrix,Columns,DiffValues,DomainMax,Cardinality),
 	reset_timer,
 	labelMatrix(Matrix,Res),printBoard(Res),
 	print_time,
