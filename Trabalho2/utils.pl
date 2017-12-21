@@ -26,7 +26,6 @@ clearScreen:-
 	write('\33\[2J').
 
 	
-
 %USER_I/O
 		
 %CONVERT_ASCII_CODE_TO_NUMBER
@@ -138,6 +137,20 @@ print_time :-
 	statistics(walltime,[_,T]),
 	TS is ((T//10)*10)/1000,
 	nl, write('Time: '), write(TS), write('s'), nl, nl.
+
+%CREATE_CLEAR_MATRIX
+
+clearVal(X):-
+	X = ' '.
+
+clearLine(N,Line):-
+	length(Line, N),
+	maplist(clearVal,Line).
+	
+
+createClearMatrix(N,Matrix):-
+	length(Matrix,N),
+	maplist(clearLine(N), Matrix).
 	
 	
 %MAP_LIST_ELEM

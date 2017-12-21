@@ -33,6 +33,11 @@ mainMenu:-
 	clearScreen,
 	write('Error: invalid input.'), nl,
 	mainMenu.
+	
+mainMenuOption(0):- !.
+mainMenuOption(1):- 
+	playMenu.
+
 
 /* 
 *  PLAY MENU 
@@ -47,11 +52,10 @@ playMenu:-
 	write('*                        *'),nl,
 	write('**************************'),nl,
 	write('*                        *'),nl,
-	write('*Choose board size (4-10)*'),nl,
+	write('*Choose board size (4-8)*'),nl,
 	write('*Option:                 *'),nl,
 	readOption(Size),
-	write('Here'),nl,
-	integer(Size), Size >= 4, Size < 11, !,
+	integer(Size), Size >= 4, Size < 9, !,
 	clearScreen,
 	rcMenu(Size).
 
@@ -83,12 +87,12 @@ rcMenu(Size):-
 
 rcMenuOption(0,Size):-
 	clearScreen,
-	nl,write('Random generated puzzle: '),nl,
+	nl,write('Randomly generated puzzle: '),nl,nl,
 	getRandomDoppel(Size,Doppel),
 	getDoppelRows(Doppel,Rows),
 	getDoppelColumns(Doppel,Columns),
-	getDoppelMatrix(Doppel,Matrix),
-	printMatrix(Rows,Columns,Matrix),
+	createClearMatrix(Size,Matrix),
+	printMatrix(Rows,Columns,Matrix),nl,
 	solveMenu(Doppel).
 	
 rcMenuOption(1,Size):-
@@ -99,11 +103,10 @@ rcMenuOption(1,Size):-
 	verifyInts(Cols),
 	verifySums(Cols,Size),!,
 	clearScreen,
-	write(Rows),nl,
-	write(Cols),nl,
-	nl, write('Selected puzzle: '), nl,
+	nl, write('Selected puzzle: '), nl,nl,
 	createDoppel(Size,Rows,Cols,Doppel),
-	write(Doppel),nl,
+	createClearMatrix(Size,Matrix),
+	printMatrix(Rows,Cols,Matrix),nl,
 	nl, write('Press Enter to solve'), nl,
 	waitForEnter,
 	waitForEnter,
@@ -134,6 +137,7 @@ solveMenuOption(1,Doppel):-
 	nl, write('Solving...'),
 	doppelblock(Size,Rows,Columns,Matrix),
 	clearScreen,
+	printSolutionText,
 	printMatrixWithStats(Rows,Columns,Matrix),
 	nl, write('Press Enter to continue...'),
 	waitForEnter,
@@ -145,12 +149,16 @@ solveMenuOption(2,Doppel):-
 	getDoppelColumns(Doppel,Columns),
 	getDoppelMatrix(Doppel,Matrix),
 	clearScreen,
+	printSolutionText,
 	printMatrix(Rows,Columns,Matrix),
 	nl, write('Press Enter to continue...'),
 	waitForEnter,
 	clearScreen,
 	mainMenu.
-
-mainMenuOption(0):- !.
-mainMenuOption(1):- 
-	playMenu.
+	
+printSolutionText:-
+	nl,nl,
+	write('       **********************'),nl,
+	write('       *      SOLUTION      *'),nl,
+	write('       **********************'),nl,
+	nl,nl,nl.
