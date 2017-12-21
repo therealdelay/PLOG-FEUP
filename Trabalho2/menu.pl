@@ -6,6 +6,10 @@ doppelblock:-
 	clearScreen,
 	mainMenu.
 
+/* 
+*  MAIN MENU 
+*/	
+
 mainMenu:-
 	write('*********************'),nl,
 	write('*****Doppelblock*****'),nl,
@@ -29,7 +33,11 @@ mainMenu:-
 	clearScreen,
 	write('Error: invalid input.'), nl,
 	mainMenu.
-	
+
+/* 
+*  PLAY MENU 
+*/	
+
 playMenu:-
 	write('**************************'),nl,
 	write('********Doppelblock*******'),nl,
@@ -52,6 +60,11 @@ playMenu:-
 	write('Error: invalid input.'), nl,
 	playMenu.
 
+	
+/* 
+*  RC MENU 
+*/
+
 rcMenu(Size):-
 	write('**************************'),nl,
 	write('********Doppelblock*******'),nl,
@@ -68,54 +81,75 @@ rcMenu(Size):-
 	integer(Option), Option >= 0, Option < 2, !,
 	rcMenuOption(Option,Size).
 
-readArray(Array):-
-	read(Array).
-
 rcMenuOption(0,Size):-
-	write('Gerar aleatorio'),nl.
-
-
-getRows(Rows,Size):-
-	write('Rows sums ([R1,R2,R3,...]):'),nl,
-	readArray(Rows),
-	length(Rows, Size),!.
-
-getRows(Rows,Size):-
-	write('Error: wrong array size.'), nl,
-	getRows(Rows,Size).
-
-getCols(Cols,Size):-
-	write('Columns sums ([C1,C2,C3,...]):'),nl,
-	readArray(Cols),
-	length(Cols, Size),!.
-
-getCols(Cols,Size):-
-	write('Error: wrong array size.'), nl,
-	getCols(Cols,Size).
-
+	clearScreen,
+	nl,write('Random generated puzzle: '),nl,
+	getRandomDoppel(Size,Doppel),
+	getDoppelRows(Doppel,Rows),
+	getDoppelColumns(Doppel,Columns),
+	getDoppelMatrix(Doppel,Matrix),
+	printMatrix(Rows,Columns,Matrix),
+	solveMenu(Doppel).
+	
 rcMenuOption(1,Size):-
 	getRows(Rows,Size),
 	verifyInts(Rows),
 	verifySums(Rows,Size),
 	getCols(Cols,Size),
 	verifyInts(Cols),
-	verifySums(Cols,Size),!.
+	verifySums(Cols,Size),!,
+	clearScreen,
+	write(Rows),nl,
+	write(Cols),nl,
+	nl, write('Selected puzzle: '), nl,
+	createDoppel(Size,Rows,Cols,Doppel),
+	write(Doppel),nl,
+	nl, write('Press Enter to solve'), nl,
+	waitForEnter,
+	waitForEnter,
+	solveMenuOption(1,Doppel).
+	
 
 rcMenuOption(1,Size):-
 	write('Error: array must have only integers less than the sum of all integers from 1 to Size-2.'),nl,
 	rcMenuOption(1,Size).
-
-verifyInts([]).
-verifyInts([H|T]):-
-	integer(H),
-	verifyInts(T).
 	
-verifySums([],_).
-verifySums([H|T],Size):-
-	Sum is ((Size-2)*(Size-1)/2),
-	H =< Sum,
-	verifySums(T,Size).
 
+solveMenu(Doppel):-
+	nl,nl,
+	write('**************************'),nl,
+	write('*                        *'),nl,
+	write('* 1 - Solve              *'),nl,
+	write('* 2 - Show solution      *'),nl,
+	write('*                        *'),nl,
+	write('**************************'),nl,
+	readOption(Option),
+	integer(Option), Option > 0, Option < 3, !,
+	solveMenuOption(Option,Doppel).
+	
+solveMenuOption(1,Doppel):-
+	getDoppelSize(Doppel,Size),
+	getDoppelRows(Doppel,Rows),
+	getDoppelColumns(Doppel,Columns),
+	nl, write('Solving...'),
+	doppelblock(Size,Rows,Columns,Matrix),
+	clearScreen,
+	printMatrixWithStats(Rows,Columns,Matrix),
+	nl, write('Press Enter to continue...'),
+	waitForEnter,
+	clearScreen,
+	mainMenu.
+	
+solveMenuOption(2,Doppel):-
+	getDoppelRows(Doppel,Rows),
+	getDoppelColumns(Doppel,Columns),
+	getDoppelMatrix(Doppel,Matrix),
+	clearScreen,
+	printMatrix(Rows,Columns,Matrix),
+	nl, write('Press Enter to continue...'),
+	waitForEnter,
+	clearScreen,
+	mainMenu.
 
 mainMenuOption(0):- !.
 mainMenuOption(1):- 
