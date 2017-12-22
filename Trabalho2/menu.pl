@@ -26,7 +26,6 @@ mainMenu:-
 	readOption(Option),
 	write(Option),nl,
 	integer(Option), Option >= 0, Option < 2, !,
-	clearScreen,
 	mainMenuOption(Option).
 
 mainMenu:-
@@ -35,7 +34,8 @@ mainMenu:-
 	mainMenu.
 	
 mainMenuOption(0):- !.
-mainMenuOption(1):- 
+mainMenuOption(1):-
+	clearScreen,
 	playMenu.
 
 
@@ -84,15 +84,16 @@ rcMenu(Size):-
 	readOption(Option),
 	integer(Option), Option >= 0, Option < 2, !,
 	rcMenuOption(Option,Size).
+	
+rcMenu(Size):-
+	clearScreen,
+	write('Error: invalid input.'), nl,
+	rcMenu(Size).
 
 rcMenuOption(0,Size):-
 	clearScreen,
 	nl,write('Randomly generated puzzle: '),nl,nl,
 	getRandomDoppel(Size,Doppel),
-	getDoppelRows(Doppel,Rows),
-	getDoppelColumns(Doppel,Columns),
-	createClearMatrix(Size,Matrix),
-	printMatrix(Rows,Columns,Matrix),nl,
 	solveMenu(Doppel).
 	
 rcMenuOption(1,Size):-
@@ -119,6 +120,11 @@ rcMenuOption(1,Size):-
 	
 
 solveMenu(Doppel):-
+	getDoppelSize(Doppel,Size),
+	getDoppelRows(Doppel,Rows),
+	getDoppelColumns(Doppel,Columns),
+	createClearMatrix(Size,Matrix),
+	printMatrix(Rows,Columns,Matrix),nl,
 	nl,nl,
 	write('**************************'),nl,
 	write('*                        *'),nl,
@@ -129,6 +135,11 @@ solveMenu(Doppel):-
 	readOption(Option),
 	integer(Option), Option > 0, Option < 3, !,
 	solveMenuOption(Option,Doppel).
+	
+solveMenu(Doppel):-
+	clearScreen,
+	write('Error: invalid input.'), nl,
+	solveMenu(Doppel).
 	
 solveMenuOption(1,Doppel):-
 	getDoppelSize(Doppel,Size),

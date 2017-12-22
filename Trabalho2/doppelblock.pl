@@ -17,7 +17,7 @@ generateDoppel(N,Res):-
 	Res = [N,Rows,CleanCols,Sol].
 	
 getRandomDoppel(N,Doppel):-
-	find_n(10,Res,generateDoppel(N,Res),Doppels),
+	find_n(100,Res,generateDoppel(N,Res),Doppels),
 	random_member(Doppel,Doppels).
 	
 
