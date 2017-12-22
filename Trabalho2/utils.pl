@@ -6,6 +6,7 @@
 :- dynamic(find_n_counter/1).
 
 %CONVERTS the list symbol to the board symbol
+convert(0,'#').
 convert(X,X).
 
 %IF_THEN_ELSE

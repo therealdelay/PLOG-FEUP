@@ -108,17 +108,17 @@ restrictRows([Row|OtherRows], [Value|OtherValues], DiffValues, DomainMax, Cardin
 	restrictLine(Row,DomainMax,Value),
 	restrictRows(OtherRows,OtherValues,DiffValues,DomainMax, Cardinality).
 
-restrictColumnsIdx(Matrix, Values, DiffValues, DomainMax,Cardinality):-
-	restrictColumns(Matrix,1,Values,DiffValues,DomainMax,Cardinality).
+restrictColumns(Matrix, Values, DiffValues, DomainMax,Cardinality):-
+	restrictColumnsIdx(Matrix,1,Values,DiffValues,DomainMax,Cardinality).
 	
-restrictColumns(_,_,[_|[]],_,_,_).
+restrictColumnsIdx(_,_,[_|[]],_,_,_).
 
-restrictColumns(Matrix, ColIndex, [Value|OtherValues], DiffValues, DomainMax, Cardinality):-
+restrictColumnsIdx(Matrix, ColIndex, [Value|OtherValues], DiffValues, DomainMax, Cardinality):-
 	maplistelem(ColIndex,Matrix,Col),
 	global_cardinality(Col,Cardinality),
 	restrictLine(Col,DomainMax,Value),
 	NextIdx #= ColIndex + 1,
-	restrictColumns(Matrix, NextIdx,OtherValues,DiffValues,DomainMax,Cardinality).
+	restrictColumnsIdx(Matrix, NextIdx,OtherValues,DiffValues,DomainMax,Cardinality).
 
 
 doppelblock(N,Rows,Columns,Res):-
@@ -128,6 +128,6 @@ doppelblock(N,Rows,Columns,Res):-
 	DomainMax #= N-2,
 	createCardinalityRestraints(DomainMax,Cardinality),
 	restrictRows(Matrix,Rows,DiffValues,DomainMax,Cardinality),
-	restrictColumnsIdx(Matrix,Columns,DiffValues,DomainMax,Cardinality),
+	restrictColumns(Matrix,Columns,DiffValues,DomainMax,Cardinality),
 	reset_timer,
 	labelMatrix(Matrix,Res).
