@@ -91,9 +91,10 @@ rcMenu(Size):-
 	rcMenu(Size).
 
 rcMenuOption(0,Size):-
+	nl,nl,write('Generating...'),
+	getRandomDoppel(Size,Doppel),
 	clearScreen,
 	nl,write('Randomly generated puzzle: '),nl,nl,
-	getRandomDoppel(Size,Doppel),
 	solveMenu(Doppel).
 	
 rcMenuOption(1,Size):-
@@ -146,7 +147,7 @@ solveMenuOption(1,Doppel):-
 	getDoppelRows(Doppel,Rows),
 	getDoppelColumns(Doppel,Columns),
 	nl, write('Solving...'),
-	doppelblock(Size,Rows,Columns,Matrix),
+	doppelblock(Size,Rows,Columns,false,Matrix),
 	clearScreen,
 	printSolutionText,
 	printMatrixWithStats(Rows,Columns,Matrix),

@@ -165,13 +165,18 @@ maplistelem(Pos, Xs, Ys) :-
 	
 %FIND_N_SOLUTIONS
 
-find_n(N, Term, Goal, Solutions) :-
+find_n(N, Filter, Term, Goal, Solutions) :-
     (   set_find_n_counter(N),
         retractall(find_n_solution(_)),
         once((
             call(Goal),
-            assertz(find_n_solution(Term)),
-            dec_find_n_counter(M),
+			dec_find_n_counter(M),
+			/*write(M),nl,*/
+			Sol is mod(M,Filter),
+			ite(Sol == 0,
+				assertz(find_n_solution(Term)),
+				true
+			),
             M =:= 0
         )),
         fail
